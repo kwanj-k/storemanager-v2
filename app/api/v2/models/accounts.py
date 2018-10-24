@@ -64,13 +64,15 @@ class User:
         """
         custom json_dump method to return a custom python dict in response
         """
-        if self.role == 0:
-            self.role = 'SuperAdmin'
-        if self.role == 1:
-            self.role == 'Admin'
-        if self.role == 2:
-            self.role == 'Attendant'
+        def rank():
+            if self.role==0:
+                rank = 'SuperAdmin'
+            if self.role==1:
+                rank = 'Admin'
+            if self.role==2:
+                rank = 'Attendant'
+            return rank
         return dict(
             email=self.email,
-            role=self.role,
+            role=rank(),
             added_at = self.added_at)

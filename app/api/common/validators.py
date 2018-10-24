@@ -3,9 +3,11 @@ File with all user input validation methods
 """
 # Standard library import
 import re
+from functools import wraps
 
 # Third party import
 from flask import abort
+from flask_jwt_extended import get_jwt_identity
 
 # Local app imports
 from app.api.v2.views.helpers import get_user_by_email
@@ -59,3 +61,28 @@ def new_store_validator(k):
 def login_validator(k):
     p_l = ['email', 'password']
     common(p_l,k)
+
+def super_admin_required(f):
+    """ A decorator for restricting certain routes to only superadmin/owner of the store"""
+    @wraps(f)
+    def decorator(*args, **kwargs):
+        current_user = get_user_by_email(get_jwt_identity())
+        r = current_user[2]
+        if r != 0:
+            msg = "Only Super Admin can access these resource"
+            abort(406, msg)
+        return f(*args, **kwargs)
+    return decorator
+
+
+def admin_required(f):
+    """ A decorator for restricting certain routes to only admins"""
+    @wraps(f)
+    def decorator(*args, **kwargs):
+        current_user = get_user_by_email(get_jwt_identity())
+        r = current_user[2]
+        if r == 2 or r == 'Attendant':
+            msg = "Only administrators can access these resource"
+            abort(406, msg)
+        return f(*args, **kwargs)
+    return decorator

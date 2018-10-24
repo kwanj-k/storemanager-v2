@@ -1,6 +1,6 @@
 """
 This file contains all the authentication resources/endpoints
-i.e signup and login
+i.e signup,login,addadmin and attendant
 """
 
 
@@ -8,7 +8,7 @@ i.e signup and login
 from flask_restplus import Resource
 from flask import request,abort
 from werkzeug.security import check_password_hash
-from flask_jwt_extended import create_access_token, get_jwt_identity
+from flask_jwt_extended import create_access_token, get_jwt_identity,jwt_required
 
 #Local imports
 from app.api.v2.models.accounts import Store,User
@@ -16,7 +16,7 @@ from app.api.v2.db_config import conn
 from app.api.v2.views.expect import StoreEtn,UserEtn
 from app.api.v2.db_config import conn
 from .helpers import get_user_by_email,get_store_by_name
-from app.api.common.validators import login_validator,new_store_validator
+from app.api.common.validators import login_validator,new_store_validator,super_admin_required,admin_required
 
 #cursor to perform database operations
 cur = conn.cursor()
@@ -78,3 +78,60 @@ class Login(Resource):
             abort(400, msg)
         access_token = create_access_token(identity=json_data['email'])
         return {"status": "Success!", "token": access_token}, 200
+
+
+@u2.route('admin')
+class AddAdmin(Resource):
+    @u2.doc( security='apikey')
+    @jwt_required
+    @super_admin_required
+    @u2.expect(user_login)
+    def post(self):
+        """
+        Add Admin
+        """  
+        json_data = request.get_json(force=True)
+        login_validator(json_data)
+        email = get_jwt_identity()
+        newad = get_user_by_email(json_data['email'])
+        if newad and newad[2] <= 1:
+            msg = "User already exists and is Admin already"
+            abort(406, msg)
+        user = get_user_by_email(email)
+        store_id = user[1]
+        role = 1
+        user_reg = User(store_id,
+                         role,
+                         json_data['email'],
+                         json_data['password'])
+        user_reg.create_user()
+        return {"status": "Success!", "data": user_reg.json_dump()}, 201
+
+
+@u2.route('attendant')
+class AddAttendant(Resource):
+    @u2.doc( security='apikey')
+    @jwt_required
+    @admin_required
+    @u2.expect(user_login)
+    def post(self):
+        """
+        Add Attendant
+        """
+        json_data = request.get_json(force=True)
+        login_validator(json_data)
+        newatt = get_user_by_email(json_data['email'])
+        if newatt and newatt[2] == 2:
+            msg = "User already exists and is an Attendant"
+            abort(406, msg)
+        email = get_jwt_identity()
+        user = get_user_by_email(email)
+        store_id = user[0]
+        role = 2
+        user_reg = User(store_id,
+                             role,
+                             json_data['email'],
+                             json_data['password'])
+        user_reg.create_user()
+        return {"status": "Success!", "data": user_reg.json_dump()}, 201
+
