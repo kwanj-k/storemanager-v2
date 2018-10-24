@@ -18,7 +18,6 @@ env:
   - FLASK_VERSION=1.0.2
 
 script: 
-  - export TEST_URL="dbname=tch3 user=kwanj password=4084theG"
   - pytest --cov-report term-missing --cov=app
   - coveralls
 
