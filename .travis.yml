@@ -7,6 +7,7 @@ services:
   - postgresql
 
 before_script:
+- source ./.travis.sh
 - psql -c "CREATE DATABASE tch3;" -U postgres
 - psql -c "CREATE USER kwanj WITH PASSWORD '4084theG';" -U postgres
 
@@ -23,7 +24,4 @@ script:
 
 after_success:
   - coveralls
-
-cache:
-  - pip
   
