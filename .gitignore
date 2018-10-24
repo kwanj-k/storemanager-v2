@@ -101,3 +101,9 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# pip freeze > requirements.txt
+
+# pytest --cov-report term-missing --cov=app
+
+# autopep8 --in-place --aggressive
