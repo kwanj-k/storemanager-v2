@@ -3,23 +3,24 @@ language: python
 python:
   - 3.6
 
+install:
+  - pip install -r requirements.txt
+  - pip install coveralls
+
 services:
   - postgresql
 
 before_script:
-- source ./.travis.sh
 - psql -c "CREATE DATABASE tch3;" -U postgres
 - psql -c "CREATE USER kwanj WITH PASSWORD '4084theG';" -U postgres
 
-install:
-  - pip install -r requirements.txt
-  - pip install coveralls
-env:
-  - FLASK_VERSION=1.0.2
-
 script: 
+   - export Test_URL="dbname=tch3 user=kwanj password=4084theG"
   - pytest --cov-report term-missing --cov=app
   - coveralls
 
 after_success:
   - coveralls
+
+cache:
+  - pip
