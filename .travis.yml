@@ -16,6 +16,8 @@ before_script:
 - psql -c "create user kwanj WITH PASSWORD '4084theG';" -U postgres
 
 script: 
+  - export APP_SETTINGS="testing"
+  
   - export Test_URL="dbname=tch3 user=kwanj password=4084theG"
 
   - pytest --cov-report term-missing --cov=app
