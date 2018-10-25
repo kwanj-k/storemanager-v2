@@ -52,7 +52,7 @@ class Carts(Resource):
                             'amount': c[4]}
             totalamount += c[4]
             all_cart_items.append(format_cart)
-        return {"TotalAmount":totalamount,"Items":all_cart_items},200
+        return {"status":"Success!","TotalAmount":totalamount,"Items":all_cart_items},200
 
     @jwt_required
     def post(self):
@@ -80,7 +80,7 @@ class Carts(Resource):
             totalamount += c[4]
             sale_order.append(format_sale)
         cur.execute("DELETE FROM carts WHERE seller_id={};".format(seller_id))
-        return {"status":"Sold!","TotalAmount":totalamount,"Items":sale_order}
+        return {"status":"Sold!","TotalAmount":totalamount,"Items":sale_order},201
 
 
     @jwt_required
