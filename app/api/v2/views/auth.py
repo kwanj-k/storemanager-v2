@@ -120,8 +120,8 @@ class AddAttendant(Resource):
         """
         json_data = request.get_json(force=True)
         login_validator(json_data)
-        newatt = get_user_by_email(json_data['email'])
-        if newatt and newatt[2] == 2:
+        newattendant = get_user_by_email(json_data['email'])
+        if newattendant and newattendant[2] == 2:
             msg = "User already exists and is an Attendant"
             abort(406, msg)
         email = get_jwt_identity()
