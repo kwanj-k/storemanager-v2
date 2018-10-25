@@ -11,6 +11,7 @@ from flask_restplus import Api
 from .views.auth import v2 as newstore_route
 from .views.auth import u2 as login_route
 from .views.products import v2 as products_route
+from .views.carts import v2 as cart_routes
 
 authorizations = {
     'apikey': {
@@ -29,3 +30,4 @@ v2 = api.namespace(
 api.add_namespace(newstore_route, path="/signup")
 api.add_namespace(login_route, path="/")
 api.add_namespace(products_route, path="/products")
+api.add_namespace(cart_routes, path="/cart")
