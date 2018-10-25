@@ -17,10 +17,10 @@ from .views.sales import v2 as sales_routes
 
 authorizations = {
     'apikey': {
-       'type': 'apiKey',
-       'in': 'header',
-       'name': 'Authorization'
-   }}
+        'type': 'apiKey',
+        'in': 'header',
+        'name': 'Authorization'
+    }}
 
 v_2 = Blueprint('v_2', __name__, url_prefix="/api/v2")
 api = Api(v_2)

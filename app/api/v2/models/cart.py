@@ -2,16 +2,17 @@
 cart definition class
 """
 
-#local imports
+# local imports
 from app.api.common.utils import dt
 from app.api.v2.db_config import conn
 
 
-#cursor to perform database operations
+# cursor to perform database operations
 cur = conn.cursor()
 
+
 class Cart:
-    def __init__(self,seller_id,product, number, amount):
+    def __init__(self, seller_id, product, number, amount):
         """
         Cart constructor
         """
@@ -24,9 +25,9 @@ class Cart:
     def add_to_cart(self):
         item = """INSERT INTO
                 carts  (seller_id,product, number,amount,created_at)
-                VALUES 
+                VALUES
                 ('%s','%s','%s','%s','%s')"""\
-                 % (self.seller_id,self.product,self.number,self.amount,self.created_at)
+                 % (self.seller_id, self.product, self.number, self.amount, self.created_at)
         cur.execute(item)
         conn.commit()
 
@@ -35,8 +36,8 @@ class Cart:
         custom json_dump method to return a custom python dict in response
         """
         return dict(
-            product = self.product,
-            number = self.number,
-            amount = self.amount,
-            created_at = self.created_at
+            product=self.product,
+            number=self.number,
+            amount=self.amount,
+            created_at=self.created_at
         )

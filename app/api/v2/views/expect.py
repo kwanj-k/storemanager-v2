@@ -3,8 +3,9 @@ File contains the namespaces and
 user input expectations
 """
 
-#Third party import
+# Third party import
 from flask_restplus import fields, Namespace
+
 
 class StoreEtn:
     """
@@ -19,6 +20,7 @@ class StoreEtn:
         'email': fields.String(required=True, description='The owners/stores email address'),
         'password': fields.String(required=True, description='The owners password')
     })
+
 
 class UserEtn:
     """
@@ -46,6 +48,7 @@ class ProductEtn:
         'price': fields.Integer(required=True, description='The price of the product')
     })
 
+
 class CartEtn:
     """
     Cart input data expectations
@@ -56,6 +59,7 @@ class CartEtn:
     carts = v2.model('Cart', {
         'number': fields.Integer(required=True, description='The number of products to add')
     })
+
 
 class CategoryEtn:
     """
