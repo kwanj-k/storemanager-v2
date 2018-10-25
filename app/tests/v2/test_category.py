@@ -81,3 +81,22 @@ class TestCategories(Settings):
         res1 = json.loads(res.data.decode())
         self.assertEqual(res1['status'],'Deleted!')
         self.assertEqual(res.status_code, 200)
+
+    def test_add_category_to_product(self):
+        """Test the add category to a product"""
+        login = self.autheniticate()
+        token = json.loads(login.data.decode()).get('token')
+        self.app.post(product_url,
+                      data=json.dumps(self.product_data),
+                      headers=dict(Authorization="Bearer " + token),
+                      content_type='application/json')
+        self.app.post(category_url,
+                      data=json.dumps(self.data),
+                      headers=dict(Authorization="Bearer " + token),
+                      content_type='application/json')
+        res = self.app.post(productcategory_url,
+                            headers=dict(Authorization="Bearer " + token),
+                            content_type='application/json')
+        res1 = json.loads(res.data.decode())
+        self.assertEqual(res1['status'],'Updated!')
+        self.assertEqual(res.status_code, 200)

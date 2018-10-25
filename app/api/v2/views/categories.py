@@ -136,7 +136,7 @@ class ProductCategory(Resource):
             msg = 'Product does not exist'
             abort(404,msg)
         category_name = category[2]
-        cur.execute("UPDATE products SET category={0} WHERE id ={1}".format(category_name,p_id))
+        cur.execute("UPDATE products SET category='{}' WHERE id ='{}'".format(category_name,p_id))
         conn.commit()
         cur.execute("SELECT * FROM products WHERE id={};".format(p_id))
         new_p = cur.fetchone()
