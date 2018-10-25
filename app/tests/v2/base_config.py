@@ -15,8 +15,8 @@ from app.api.v2.db_config import create_tables,drop_all
 config_name = "testing"
 app = create_app(config_name)
 
-l_url = "/api/v2/auth/login"
-s_url = "/api/v2/signup"
+login_url = "/api/v2/auth/login"
+signup_url = "/api/v2/signup"
 
 class Settings(unittest.TestCase):
     """
@@ -40,10 +40,10 @@ class Settings(unittest.TestCase):
         create_tables()
 
     def autheniticate(self):
-        self.app.post(s_url,
+        self.app.post(signup_url,
                       data=json.dumps(self.new_store),
                       content_type='application/json')
-        return self.app.post(l_url,
+        return self.app.post(login_url,
                              data=json.dumps(self.login_data),
                              content_type='application/json')
 
