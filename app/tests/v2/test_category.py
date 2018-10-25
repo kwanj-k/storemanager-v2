@@ -7,9 +7,9 @@ import json
 # Local application imports
 from .base_config import Settings
 
-c_url = "/api/v2/categories"
-p_url = "/api/v2/products"
-pc_url = "/api/v2/products/1/category/1"
+category_url = "/api/v2/categories"
+product_url = "/api/v2/products"
+productcategory_url = "/api/v2/products/1/category/1"
 
 
 class TestCategories(Settings):
@@ -27,7 +27,7 @@ class TestCategories(Settings):
 
     def test_category_addition(self):
         """Test for the add category endpoint."""
-        res = self.app.post(c_url,
+        res = self.app.post(category_url,
                             data=json.dumps(self.data),
                             content_type='application/json')
         res1 = json.loads(res.data.decode())
@@ -36,17 +36,17 @@ class TestCategories(Settings):
 
     def test_get_all_categories(self):
         """Test for the get all categories endpoint."""
-        self.app.post(c_url,
+        self.app.post(category_url,
                       data=json.dumps(self.data),
                       content_type='application/json')
-        res = self.app.get(c_url)
+        res = self.app.get(category_url)
         res1 = json.loads(res.data.decode())
         self.assertEqual(res1['message'],'Success!')
         self.assertEqual(res.status_code, 200)
 
     def test_category_update(self):
         """Test for the category update endpoint."""
-        self.app.post(c_url,
+        self.app.post(category_url,
                       data=json.dumps(self.data),
                       content_type='application/json')
         res = self.app.put('/api/v2/categories/1',
@@ -58,7 +58,7 @@ class TestCategories(Settings):
 
     def test_category_delete(self):
         """Test for the category delete endpoint."""
-        self.app.post(c_url,
+        self.app.post(category_url,
                       data=json.dumps(self.data),
                       content_type='application/json')
         res = self.app.delete('/api/v2/categories/1',
@@ -69,13 +69,13 @@ class TestCategories(Settings):
 
     def test_add_product_to_category(self):
         """Test the add category to a product"""
-        self.app.post(p_url,
+        self.app.post(product_url,
                       data=json.dumps(self.product_data),
                       content_type='application/json')
-        self.app.post(c_url,
+        self.app.post(category_url,
                       data=json.dumps(self.data),
                       content_type='application/json')
-        res = self.app.post(pc_url,
+        res = self.app.post(productcategory_url,
                             content_type='application/json')
         res1 = json.loads(res.data.decode())
         self.assertEqual(res1['message'],'Category added')
