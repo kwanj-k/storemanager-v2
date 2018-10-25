@@ -17,9 +17,8 @@ before_script:
 
 script: 
   - export APP_SETTINGS="testing"
-  
+  - export SECRET="iamasecrettheunsadtheunsulliedtheundead"
   - export Test_URL="dbname=tch3 user=kwanj password=4084theG"
-
   - pytest --cov-report term-missing --cov=app
 
   - coveralls
