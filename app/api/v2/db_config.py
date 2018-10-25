@@ -8,14 +8,14 @@ import psycopg2
 
 
 config_name = os.getenv('APP_SETTINGS')
-durl = os.getenv('Dev_URL')
-turl = os.getenv('TEST_URL')
+development_url = os.getenv('Dev_URL')
+testing_url = os.getenv('TEST_URL')
 try:
     """Put the connection in a try so we know when not connected."""
     if config_name == 'development':
-        conn = psycopg2.connect(durl)
+        conn = psycopg2.connect(development_url)
     if config_name == 'testing':
-        conn = psycopg2.connect(turl)
+        conn = psycopg2.connect(testing_url)
 except:
     print("Database is not connected.")
 
