@@ -60,6 +60,7 @@ class Categories(Resource):
         all_categories = []
         for c in categories:
             format_cat = {
+            "id":c[0],
             "name":c[2],
             "Added_at":c[3]
             }

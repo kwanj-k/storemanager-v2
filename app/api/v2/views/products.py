@@ -91,7 +91,7 @@ class ProductDetail(Resource):
             "price":product[4],
             'category':product[5],
             'added_at':product [6]}
-        return {"status":"success!","product":format_p},200
+        return {"status":"Success!","product":format_p},200
 
     @v2.doc( security='apikey')
     @jwt_required
@@ -130,7 +130,7 @@ class ProductDetail(Resource):
             'category':new_p[5],
             'added_at':new_p[6]
         }
-        return {"status":"Updated","product":format_new_p},200
+        return {"status":"Updated!","product":format_new_p},200
 
     @v2.doc( security='apikey')
     @jwt_required

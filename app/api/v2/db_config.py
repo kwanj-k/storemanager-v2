@@ -36,6 +36,7 @@ def drop_all():
     """
     Method to drop all the tables in the database
     """
+    cur.execute("DROP TABLE IF EXISTS categories CASCADE")
     cur.execute("DROP TABLE IF EXISTS users CASCADE")
     cur.execute("DROP TABLE IF EXISTS stores CASCADE")
     cur.execute("DROP TABLE IF EXISTS products CASCADE")
@@ -65,12 +66,7 @@ def tables():
         added_at varchar);
         """
 
-    categories = """
-        CREATE TABLE IF NOT EXISTS categories(id serial PRIMARY KEY, 
-        store_id int,
-        name varchar,
-        created_at varchar);
-        """
+    
 
     carts = """
         CREATE TABLE IF NOT EXISTS carts(id serial PRIMARY KEY, 
@@ -98,6 +94,12 @@ def tables():
         inventory int, 
         price int,
         category varchar,
+        created_at varchar);
+        """
+    categories = """
+        CREATE TABLE IF NOT EXISTS categories(id serial PRIMARY KEY, 
+        store_id int,
+        name varchar,
         created_at varchar);
         """
 
