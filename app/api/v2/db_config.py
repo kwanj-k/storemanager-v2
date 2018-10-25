@@ -9,7 +9,7 @@ import psycopg2
 
 config_name = os.getenv('APP_SETTINGS')
 development_url = os.getenv('Dev_URL')
-testing_url = os.getenv('TEST_URL')
+testing_url = os.getenv('Test_URL')
 try:
     """Put the connection in a try so we know when not connected."""
     if config_name == 'development':
