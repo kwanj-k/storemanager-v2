@@ -32,3 +32,4 @@ def get_store_id(email):
     user = cur.fetchone()
     store_id = user[1]
     return store_id
+    

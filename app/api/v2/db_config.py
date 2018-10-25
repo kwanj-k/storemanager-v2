@@ -65,3 +65,4 @@ def tables():
 
     queries = [stores,users]
     return queries
+    

@@ -58,6 +58,7 @@ class TestAuth(Settings):
         """
         login = self.autheniticate()
         token = json.loads(login.data.decode()).get('token')
+        
         res = self.app.post(admin_url,
                             data=json.dumps(self.add_data),
                             headers=dict(Authorization="Bearer " + token),

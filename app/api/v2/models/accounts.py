@@ -76,4 +76,6 @@ class User:
             email=self.email,
             role=rank(),
             added_at = self.added_at)
+
+            
             
