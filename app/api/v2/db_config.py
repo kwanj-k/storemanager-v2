@@ -2,7 +2,7 @@
 This file contains the database configurations and common operations
 """
 
-#Standard library imports
+# Standard library imports
 import os
 import psycopg2
 
@@ -16,10 +16,11 @@ try:
         conn = psycopg2.connect(development_url)
     if config_name == 'testing':
         conn = psycopg2.connect(testing_url)
-except:
+except BaseException:
     print("Database is not connected.")
 
 cur = conn.cursor()
+
 
 def create_tables():
     """
@@ -29,6 +30,7 @@ def create_tables():
     for q in queries:
         cur.execute(q)
     conn.commit()
+
 
 def drop_all():
     """
@@ -63,6 +65,42 @@ def tables():
         added_at varchar);
         """
 
-    queries = [stores,users]
+    categories = """
+        CREATE TABLE IF NOT EXISTS categories(id serial PRIMARY KEY, 
+        store_id int,
+        name varchar,
+        created_at varchar);
+        """
+
+    carts = """
+        CREATE TABLE IF NOT EXISTS carts(id serial PRIMARY KEY, 
+        seller_id int,
+        product varchar, 
+        number int, 
+        amount int,
+        created_at varchar);
+        """
+
+    sales = """
+        CREATE TABLE IF NOT EXISTS sales(id serial PRIMARY KEY, 
+        store_id int,
+        seller_id int,
+        product varchar, 
+        number int, 
+        amount int,
+        created_at varchar);
+        """
+
+    products = """
+        CREATE TABLE IF NOT EXISTS products(id serial PRIMARY KEY, 
+        store_id int,
+        name varchar,
+        inventory int, 
+        price int,
+        category varchar,
+        created_at varchar);
+        """
+
+    queries = [stores,users,products,sales,carts,categories]
     return queries
-    
+ 
