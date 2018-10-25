@@ -75,7 +75,5 @@ class User:
         return dict(
             email=self.email,
             role=rank(),
-            added_at = self.added_at)
-
-            
+            added_at = self.added_at)        
             

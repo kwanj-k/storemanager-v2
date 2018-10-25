@@ -134,4 +134,3 @@ class AddAttendant(Resource):
                              json_data['password'])
         user_reg.create_user()
         return {"status": "Success!", "data": user_reg.json_dump()}, 201
-

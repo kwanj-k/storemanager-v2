@@ -86,3 +86,4 @@ def admin_required(f):
             abort(406, msg)
         return f(*args, **kwargs)
     return decorator
+    

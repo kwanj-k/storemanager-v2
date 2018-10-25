@@ -31,4 +31,3 @@ class UserEtn:
         'email': fields.String(required=True, description='The user\'s email address'),
         'password': fields.String(required=True, description='The user"s password')
     })
-
