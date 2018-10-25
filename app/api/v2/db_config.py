@@ -36,6 +36,9 @@ def drop_all():
     """
     cur.execute("DROP TABLE IF EXISTS users CASCADE")
     cur.execute("DROP TABLE IF EXISTS stores CASCADE")
+    cur.execute("DROP TABLE IF EXISTS products CASCADE")
+    cur.execute("DROP TABLE IF EXISTS carts CASCADE")
+    cur.execute("DROP TABLE IF EXISTS sales CASCADE")
     conn.commit()
 
 def tables():
