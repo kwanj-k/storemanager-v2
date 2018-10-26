@@ -32,7 +32,6 @@ def common(l, d):
                 msg = 'The {} can not be empty'.format(i)
                 abort(406, msg)
 
-
 def commonp(d):
 
     # let dict d
@@ -45,7 +44,6 @@ def commonp(d):
             if not isinstance(v, int):
                 msg = 'Please make sure the {} is a number'.format(i)
                 abort(406, msg)
-
 
 def new_store_validator(k):
     """
@@ -72,7 +70,6 @@ def new_store_validator(k):
                     re.match(r"^[_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,4})$", v):
                 msg = 'Please input a valid email'
                 abort(406, msg)
-
 
 def login_validator(k):
     p_l = ['email', 'password']
@@ -149,3 +146,4 @@ def admin_required(f):
             abort(406, msg)
         return f(*args, **kwargs)
     return decorator
+    

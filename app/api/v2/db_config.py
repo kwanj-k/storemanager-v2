@@ -104,3 +104,4 @@ def tables():
 
     queries = [stores, users, products, sales, carts, categories]
     return queries
+    
