@@ -10,12 +10,15 @@ import psycopg2
 config_name = os.getenv('APP_SETTINGS')
 development_url = os.getenv('Dev_URL')
 testing_url = os.getenv('Test_URL')
+production_url = os.getenv('DATABASE_URL')
 try:
     """Put the connection in a try so we know when not connected."""
     if config_name == 'development':
         conn = psycopg2.connect(development_url)
     if config_name == 'testing':
         conn = psycopg2.connect(testing_url)
+    if config_name == 'production':
+        conn = psycopg2.connect(production_url)
 except BaseException:
     print("Database is not connected.")
 
@@ -103,4 +106,3 @@ def tables():
         """
     queries = [stores, users, products, sales, carts, categories]
     return queries
-    
