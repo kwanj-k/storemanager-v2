@@ -12,10 +12,11 @@ from flask_jwt_extended import get_jwt_identity
 # Local app imports
 from app.api.v2.views.helpers import get_user_by_email
 
-def common(l,d):
-    #receive a list and a dict
-    #let list be l
-    #let dict d
+
+def common(l, d):
+    # receive a list and a dict
+    # let list be l
+    # let dict d
     for i in d.keys():
         if i not in l:
             msg = 'The field {} is not required'.format(i)
@@ -24,13 +25,25 @@ def common(l,d):
         if i not in d.keys():
             msg = 'Please provide the {} field'.format(i)
             abort(406, msg)
-    for i,v in d.items():
+    for i, v in d.items():
         if not isinstance(v, int):
             gv = "".join(v.split())
             if gv == "":
                 msg = 'The {} can not be empty'.format(i)
                 abort(406, msg)
 
+def commonp(d):
+
+    # let dict d
+    for i, v in d.items():
+        if i == 'name':
+            if isinstance(v, int):
+                msg = 'Name of the product can not be an integer'
+                abort(406, msg)
+        if i == 'inventory' or i == 'price':
+            if not isinstance(v, int):
+                msg = 'Please make sure the {} is a number'.format(i)
+                abort(406, msg)
 
 def new_store_validator(k):
     """
@@ -38,7 +51,7 @@ def new_store_validator(k):
     """
 
     p_l = ['name', 'category', 'email', 'password']
-    common(p_l,k)
+    common(p_l, k)
     for i, v in k.items():
         if not isinstance(v, str):
             msg = 'The {} field is supposed to be a string'.format(i)
@@ -60,7 +73,54 @@ def new_store_validator(k):
 
 def login_validator(k):
     p_l = ['email', 'password']
-    common(p_l,k)
+    common(p_l, k)
+
+
+def product_validator(k):
+    """
+    A create new product user input validator
+    """
+
+    pay_load = ['name', 'inventory', 'price']
+    common(pay_load, k)
+    commonp(k)
+
+
+def sales_validator(k):
+    """
+    Sales user input validator
+    """
+
+    pay_load = ['number']
+    common(pay_load, k)
+    for i in k.values():
+        if not isinstance(i, int):
+            msg = 'Number of products should be an int'
+            abort(406, msg)
+
+
+def category_validator(k):
+    """
+    Category user input validator
+    """
+
+    pay_load = ['name']
+    common(pay_load, k)
+    for i in k.values():
+        if isinstance(i, int):
+            msg = 'The category should be a string'
+            abort(406, msg)
+
+
+def product_update_validator(k):
+    """
+    Product update user input validator
+    """
+
+    pay_load = ['name', 'inventory', 'price']
+    common(pay_load, k)
+    commonp(k)
+
 
 def super_admin_required(f):
     """ A decorator for restricting certain routes to only superadmin/owner of the store"""

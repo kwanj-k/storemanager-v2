@@ -9,7 +9,7 @@ import json
 
 # Local application imports
 from app.apps import create_app
-from app.api.v2.db_config import create_tables,drop_all
+from app.api.v2.db_config import create_tables, drop_all
 
 
 config_name = "testing"
@@ -17,6 +17,7 @@ app = create_app(config_name)
 
 login_url = "/api/v2/auth/login"
 signup_url = "/api/v2/signup"
+
 
 class Settings(unittest.TestCase):
     """
