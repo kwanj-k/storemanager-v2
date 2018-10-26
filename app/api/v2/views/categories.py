@@ -38,8 +38,7 @@ class Categories(Resource):
             "SELECT * FROM categories WHERE name='{}';".format(json_data['name']))
         category = cur.fetchone()
         if category and category[1] == store_id:
-            msg = 'Category already exists'
-            abort(406, msg)
+            return {"message":"Category already exists"},409
         name = json_data['name']
         new_cat = Category(store_id, name)
         new_cat.add_category()
@@ -56,8 +55,7 @@ class Categories(Resource):
             "SELECT * FROM categories WHERE store_id='{}';".format(store_id))
         categories = cur.fetchall()
         if len(categories) < 1:
-            msg = 'There are no categories at this time'
-            abort(404, msg)
+            return {"message":"There are no categories at this time"},404
         all_categories = []
         for c in categories:
             format_cat = {
@@ -134,12 +132,12 @@ class ProductCategory(Resource):
         category = cur.fetchone()
         if not category or category[1] != store_id:
             msg = 'Category does not exist'
-            abort(406, msg)
+            return {"message":msg},404
         cur.execute("SELECT * FROM products WHERE id={};".format(p_id))
         product = cur.fetchone()
         if not product or product[1] != store_id:
             msg = 'Product does not exist'
-            abort(404, msg)
+            return {"messsage":msg},404
         category_name = category[2]
         cur.execute(
             "UPDATE products SET category='{}' WHERE id ='{}'".format(

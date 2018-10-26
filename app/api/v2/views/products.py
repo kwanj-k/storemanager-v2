@@ -42,7 +42,7 @@ class Products(Resource):
         product = cur.fetchone()
         if product and product[1] == store_id:
             msg = 'Product already exists.Update product inventory instead'
-            abort(406, msg)
+            return {"message":msg},409
         new_pro = Product(store_id, json_data['name'],
                           json_data['inventory'],
                           json_data['price'])
@@ -87,7 +87,7 @@ class ProductDetail(Resource):
         store_id = get_store_id(get_jwt_identity())
         if not product or product[1] != store_id:
             msg = 'Product does not exist'
-            abort(404, msg)
+            return {"message":msg},404
         format_p = {
             "product_name": product[2],
             "inventory": product[3],
@@ -147,7 +147,7 @@ class ProductDetail(Resource):
         store_id = get_store_id(get_jwt_identity())
         if not product or product[1] != store_id:
             msg = 'Product does not exist'
-            abort(404, msg)
+            return {"message":msg},404
         cur.execute("DELETE FROM products WHERE id={};".format(id))
         conn.commit()
         format_p = {
@@ -172,12 +172,12 @@ class ProductDetail(Resource):
         store_id = get_store_id(get_jwt_identity())
         if not product or product[1] != store_id:
             msg = 'Product does not exist'
-            abort(404, msg)
+            return {"message":msg},404
         product_name = product[2]
         if product[3] < int(number):
             msg = 'There are only {0} {1} available '.format(
                 product[3], product_name)
-            abort(406, msg)
+            return {"message":msg},406
         amount = number * product[4]
         seller = get_user_by_email(get_jwt_identity())
         seller_id = seller[0]

@@ -40,8 +40,7 @@ class Stores(Resource):
         new_store_validator(json_data)
         storecheck = get_store_by_name(json_data['name'])
         if storecheck:
-            msg = 'Store name already exists'
-            abort(406, msg)
+            return {"message":"Store name already exists"},409
         store_reg = Store(json_data['name'],
                           json_data['category'])
         store_reg.create_store()
@@ -53,8 +52,7 @@ class Stores(Resource):
         role = 0
         usercheck = get_user_by_email(json_data['email'])
         if usercheck:
-            msg = 'The user already exists'
-            abort(406, msg)
+            return {"message":"The user already exists"},409
         sup_ad_reg = User(store_id, role,
                           json_data['email'],
                           json_data['password'])
@@ -76,8 +74,7 @@ class Login(Resource):
         user = get_user_by_email(json_data['email'])
         epass = json_data['password']
         if not user or not check_password_hash(user[4], epass):
-            msg = 'Invalid credentials.If new,create a store first'
-            abort(400, msg)
+            return {"message":"Invalid credentials.If new,create a store first"},400
         access_token = create_access_token(identity=json_data['email'])
         return {"status": "Success!", "token": access_token}, 200
 
@@ -97,8 +94,7 @@ class AddAdmin(Resource):
         email = get_jwt_identity()
         newad = get_user_by_email(json_data['email'])
         if newad and newad[2] <= 1:
-            msg = "User already exists and is Admin already"
-            abort(406, msg)
+            return {"message":"User already exists and is Admin already"},409
         user = get_user_by_email(email)
         store_id = user[1]
         role = 1
@@ -124,8 +120,7 @@ class AddAttendant(Resource):
         login_validator(json_data)
         newattendant = get_user_by_email(json_data['email'])
         if newattendant and newattendant[2] == 2:
-            msg = "User already exists and is an Attendant"
-            abort(406, msg)
+            return {"message":"User already exists and is an Attendant"},409
         email = get_jwt_identity()
         user = get_user_by_email(email)
         store_id = user[0]

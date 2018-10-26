@@ -34,7 +34,7 @@ class TestCategories(Settings):
                             headers=dict(Authorization="Bearer " + token),
                             content_type='application/json')
         res1 = json.loads(res.data.decode())
-        self.assertEqual(res1['status'],'Success!')
+        self.assertEqual(res1['status'], 'Success!')
         self.assertEqual(res.status_code, 201)
 
     def test_get_all_categories(self):
@@ -46,9 +46,9 @@ class TestCategories(Settings):
                       headers=dict(Authorization="Bearer " + token),
                       content_type='application/json')
         res = self.app.get(category_url,
-                        headers=dict(Authorization="Bearer " + token))
+                           headers=dict(Authorization="Bearer " + token))
         res1 = json.loads(res.data.decode())
-        self.assertEqual(res1['status'],'Success!')
+        self.assertEqual(res1['status'], 'Success!')
         self.assertEqual(res.status_code, 200)
 
     def test_category_update(self):
@@ -64,7 +64,7 @@ class TestCategories(Settings):
                            headers=dict(Authorization="Bearer " + token),
                            content_type='application/json')
         res1 = json.loads(res.data.decode())
-        self.assertEqual(res1['status'],'Updated!')
+        self.assertEqual(res1['status'], 'Updated!')
         self.assertEqual(res.status_code, 200)
 
     def test_category_delete(self):
@@ -76,10 +76,10 @@ class TestCategories(Settings):
                       headers=dict(Authorization="Bearer " + token),
                       content_type='application/json')
         res = self.app.delete('/api/v2/categories/1',
-                            headers=dict(Authorization="Bearer " + token),
+                              headers=dict(Authorization="Bearer " + token),
                               content_type='application/json')
         res1 = json.loads(res.data.decode())
-        self.assertEqual(res1['status'],'Deleted!')
+        self.assertEqual(res1['status'], 'Deleted!')
         self.assertEqual(res.status_code, 200)
 
     def test_add_category_to_product(self):
@@ -98,5 +98,5 @@ class TestCategories(Settings):
                             headers=dict(Authorization="Bearer " + token),
                             content_type='application/json')
         res1 = json.loads(res.data.decode())
-        self.assertEqual(res1['status'],'Updated!')
+        self.assertEqual(res1['status'], 'Updated!')
         self.assertEqual(res.status_code, 200)

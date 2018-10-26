@@ -37,7 +37,7 @@ class TestAuth(Settings):
                             data=json.dumps(self.new_store),
                             content_type='application/json')
         res1 = json.loads(res.data.decode())
-        self.assertEqual(res1['message'],'Store successfully created')
+        self.assertEqual(res1['message'], 'Store successfully created')
         self.assertEqual(res.status_code, 201)
 
     def test_login(self):
@@ -49,7 +49,7 @@ class TestAuth(Settings):
                             data=json.dumps(self.login_data),
                             content_type='application/json')
         res1 = json.loads(res.data.decode())
-        self.assertEqual(res1['status'],'Success!')
+        self.assertEqual(res1['status'], 'Success!')
         self.assertEqual(res.status_code, 200)
 
     def test_addadmin(self):
@@ -58,13 +58,13 @@ class TestAuth(Settings):
         """
         login = self.autheniticate()
         token = json.loads(login.data.decode()).get('token')
-        
+
         res = self.app.post(admin_url,
                             data=json.dumps(self.add_data),
                             headers=dict(Authorization="Bearer " + token),
                             content_type='application/json')
         res1 = json.loads(res.data.decode())
-        self.assertEqual(res1['status'],'Success!')
+        self.assertEqual(res1['status'], 'Success!')
         self.assertEqual(res.status_code, 201)
 
     def test_addattendant(self):
@@ -78,5 +78,5 @@ class TestAuth(Settings):
                             headers=dict(Authorization="Bearer " + token),
                             content_type='application/json')
         res1 = json.loads(res.data.decode())
-        self.assertEqual(res1['status'],'Success!')
+        self.assertEqual(res1['status'], 'Success!')
         self.assertEqual(res.status_code, 201)

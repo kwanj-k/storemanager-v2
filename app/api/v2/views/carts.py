@@ -42,8 +42,7 @@ class Carts(Resource):
         """
         cart = cart_helper(get_jwt_identity())
         if not cart:
-            msg = 'You don\'t have any cart at the moment'
-            abort(404, msg)
+            return {"message":"You don\'t have any cart at the moment"},404
         all_cart_items = []
         totalamount = 0
         for c in cart:
@@ -64,8 +63,7 @@ class Carts(Resource):
         cart = cart_helper(get_jwt_identity())
         store_id = get_store_id(get_jwt_identity())
         if not cart:
-            msg = 'You don\'t have any cart at the moment'
-            abort(404, msg)
+            return {"message":"You don\'t have any cart at the moment"},404
         seller = get_user_by_email(get_jwt_identity())
         seller_id = seller[0]
         sale_order = []
@@ -93,8 +91,7 @@ class Carts(Resource):
         """
         cart = cart_helper(get_jwt_identity())
         if not cart:
-            msg = 'You don\'t have any cart at the moment'
-            abort(404, msg)
+            return {"message":"You don\'t have any cart at the moment"},404
         seller = get_user_by_email(get_jwt_identity())
         seller_id = seller[0]
         for c in cart:
@@ -121,8 +118,7 @@ class CartDetail(Resource):
         seller = get_user_by_email(get_jwt_identity())
         seller_id = seller[0]
         if not product or product[1] != seller_id:
-            msg = 'Product does not exist in the cart'
-            abort(404, msg)
+            return {"message":"That product is not in the cart"},404
         cur.execute(
             "SELECT * FROM products WHERE name='{}';".format(product[2]))
         p = cur.fetchone()
@@ -156,8 +152,7 @@ class CartDetail(Resource):
         seller = get_user_by_email(get_jwt_identity())
         seller_id = seller[0]
         if not product or product[1] != seller_id:
-            msg = 'Product does not exist in the cart'
-            abort(404, msg)
+            return {"message":"That product is not in the cart"},404
         new_p_inv = product[3]
         cur.execute(
             "UPDATE products SET inventory= inventory + '{}' WHERE name ='{}'".format(

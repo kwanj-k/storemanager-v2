@@ -31,7 +31,7 @@ class TestProducts(Settings):
                             headers=dict(Authorization="Bearer " + token),
                             content_type='application/json')
         res1 = json.loads(res.data.decode())
-        self.assertEqual(res1['message'],'Product successfully added')
+        self.assertEqual(res1['message'], 'Product successfully added')
         self.assertEqual(res.status_code, 201)
 
     def test_get_all_products(self):
@@ -43,9 +43,9 @@ class TestProducts(Settings):
                       headers=dict(Authorization="Bearer " + token),
                       content_type='application/json')
         res = self.app.get(product_url,
-                    headers=dict(Authorization="Bearer " + token))
+                           headers=dict(Authorization="Bearer " + token))
         res1 = json.loads(res.data.decode())
-        self.assertEqual(res1['status'],'Success!')
+        self.assertEqual(res1['status'], 'Success!')
         self.assertEqual(res.status_code, 200)
 
     def test_get_product_by_id(self):
@@ -57,9 +57,9 @@ class TestProducts(Settings):
                       headers=dict(Authorization="Bearer " + token),
                       content_type='application/json')
         res = self.app.get("/api/v2/products/1",
-                        headers=dict(Authorization="Bearer " + token))
+                           headers=dict(Authorization="Bearer " + token))
         res1 = json.loads(res.data.decode())
-        self.assertEqual(res1['status'],'Success!')
+        self.assertEqual(res1['status'], 'Success!')
         self.assertEqual(res.status_code, 200)
 
     def test_product_update(self):
@@ -71,11 +71,11 @@ class TestProducts(Settings):
                       headers=dict(Authorization="Bearer " + token),
                       content_type='application/json')
         res = self.app.put('/api/v2/products/1',
-                        headers=dict(Authorization="Bearer " + token),
+                           headers=dict(Authorization="Bearer " + token),
                            data=json.dumps(self.pdata),
                            content_type='application/json')
         res1 = json.loads(res.data.decode())
-        self.assertEqual(res1['status'],'Updated!')
+        self.assertEqual(res1['status'], 'Updated!')
         self.assertEqual(res.status_code, 200)
 
     def test_product_delete(self):
@@ -87,8 +87,8 @@ class TestProducts(Settings):
                       headers=dict(Authorization="Bearer " + token),
                       content_type='application/json')
         res = self.app.delete('/api/v2/products/1',
-                            headers=dict(Authorization="Bearer " + token),
+                              headers=dict(Authorization="Bearer " + token),
                               content_type='application/json')
         res1 = json.loads(res.data.decode())
-        self.assertEqual(res1['status'],'Deleted!')
+        self.assertEqual(res1['status'], 'Deleted!')
         self.assertEqual(res.status_code, 200)
