@@ -6,7 +6,6 @@ import re
 from functools import wraps
 
 # Third party import
-from flask import abort
 from flask_jwt_extended import get_jwt_identity
 
 # Local app imports
@@ -20,17 +19,17 @@ def common(l, d):
     for i in d.keys():
         if i not in l:
             msg = 'The field {} is not required'.format(i)
-            abort(400, msg)
+            return {"message":msg},400
     for i in l:
         if i not in d.keys():
             msg = 'Please provide the {} field'.format(i)
-            abort(406, msg)
+            return {"message":msg},400
     for i, v in d.items():
         if not isinstance(v, int):
             gv = "".join(v.split())
             if gv == "":
                 msg = 'The {} can not be empty'.format(i)
-                abort(406, msg)
+                return {"message":msg},400
 
 def commonp(d):
 
@@ -39,11 +38,11 @@ def commonp(d):
         if i == 'name':
             if isinstance(v, int):
                 msg = 'Name of the product can not be an integer'
-                abort(406, msg)
+                return {"message":msg},400
         if i == 'inventory' or i == 'price':
             if not isinstance(v, int):
                 msg = 'Please make sure the {} is a number'.format(i)
-                abort(406, msg)
+                return {"message":msg},400
 
 def new_store_validator(k):
     """
@@ -55,21 +54,21 @@ def new_store_validator(k):
     for i, v in k.items():
         if not isinstance(v, str):
             msg = 'The {} field is supposed to be a string'.format(i)
-            abort(406, msg)
+            return {"message":msg},406
         if i == 'name' or \
                 i == 'category' or i == 'username':
             if len(v) <= 4:
                 msg = 'The {} must have atleast five characters'.format(i)
-                abort(406, msg)
+                return {"message":msg},406
         if i == 'password':
             if len(i) < 8:
                 msg = 'The {} must have atleast eight characters'
-                abort(406, msg)
+                return {"message":msg},406
         if i == 'email':
             if not \
                     re.match(r"^[_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,4})$", v):
                 msg = 'Please input a valid email'
-                abort(406, msg)
+                return {"message":msg},406
 
 def login_validator(k):
     p_l = ['email', 'password']
@@ -96,7 +95,7 @@ def sales_validator(k):
     for i in k.values():
         if not isinstance(i, int):
             msg = 'Number of products should be an int'
-            abort(406, msg)
+            return {"message":msg},406
 
 
 def category_validator(k):
@@ -109,7 +108,7 @@ def category_validator(k):
     for i in k.values():
         if isinstance(i, int):
             msg = 'The category should be a string'
-            abort(406, msg)
+            return {"message":msg},406
 
 
 def product_update_validator(k):
@@ -133,7 +132,7 @@ def super_admin_required(f):
         r = current_user[2]
         if r != 0:
             msg = "Only Super Admin can access these resource"
-            abort(406, msg)
+            return {"message":msg},406
         return f(*args, **kwargs)
     return decorator
 
@@ -146,7 +145,7 @@ def admin_required(f):
         r = current_user[2]
         if r == 2 or r == 'Attendant':
             msg = "Only administrators can access these resource"
-            abort(406, msg)
+            return {"message":msg},406
         return f(*args, **kwargs)
     return decorator
     
