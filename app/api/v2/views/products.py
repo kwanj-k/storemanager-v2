@@ -43,9 +43,11 @@ class Products(Resource):
         if product and product[1] == store_id:
             msg = 'Product already exists.Update product inventory instead'
             return {"message":msg},409
+        cat_name ='Category-not-set'
         new_pro = Product(store_id, json_data['name'],
                           json_data['inventory'],
-                          json_data['price'])
+                          json_data['price'],
+                          cat_name)
         new_pro.add_product()
         res = new_pro.json_dump()
         res = {"status": "Success!",

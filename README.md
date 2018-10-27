@@ -116,13 +116,18 @@ Test the following endpoints:
 
 ### Admin endpoints
 
-| EndPoint                       | Functionality                           |
-| -------------------------------|:---------------------------------------:|                                                                 
-| POST     /attendant/           | Add a store attendant                   | 
-| POST     /products/            | Add a product                           | 
-| PUT      /products/Id/         | Update the information of a product     |
-| DELETE   /products/Id/         | Remove a product                        |
-| GET      /sales/               | Get all the the sale records            |
+| EndPoint                                    | Functionality                           |
+| --------------------------------------------|:---------------------------------------:|                                                    
+| POST     /attendant/                        | Add a store attendant                   |
+| POST     /categories/                       | Create a category                       |
+| PUT      /categories/Id                     | Update a category                       |
+| DELETE   /categories/Id                     | Delete a category                       | 
+| POST     /products/                         | Add a product without setting category  |
+| POST     /categories/Id/products            | Add a product  to a category directly   |  
+| PUT      /products/Id/                      | Update the information of a product     |
+| DELETE   /products/Id/                      | Remove a product                        |
+| POST    /categories/Id//products/Id/        | Give a product a given category         |
+| GET      /sales/                            | Get all the the sale records            |
 |                                                                          |
 
 
