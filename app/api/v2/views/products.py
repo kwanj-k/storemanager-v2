@@ -52,6 +52,9 @@ class Products(Resource):
                "message": "Product successfully added", "data": res}, 201
         return res
 
+
+
+
     @v2.doc(security='apikey')
     @jwt_required
     def get(self):
