@@ -35,6 +35,7 @@ def cart_helper(email):
 
 @v2.route('')
 class Carts(Resource):
+    @v2.doc(security='apikey')
     @jwt_required
     def get(self):
         """
@@ -54,7 +55,7 @@ class Carts(Resource):
             all_cart_items.append(format_cart)
         return {"status": "Success!", "TotalAmount": totalamount,
                 "Items": all_cart_items}, 200
-
+    @v2.doc(security='apikey')
     @jwt_required
     def post(self):
         """
@@ -83,7 +84,7 @@ class Carts(Resource):
         cur.execute("DELETE FROM carts WHERE seller_id={};".format(seller_id))
         return {"status": "Sold!", "TotalAmount": totalamount,
                 "Items": sale_order}, 201
-
+    @v2.doc(security='apikey')
     @jwt_required
     def delete(self):
         """
@@ -105,7 +106,7 @@ class Carts(Resource):
 
 @v2.route('/<int:id>')
 class CartDetail(Resource):
-
+    @v2.doc(security='apikey')
     @jwt_required
     def put(self, id):
         """
@@ -144,7 +145,7 @@ class CartDetail(Resource):
             "amount": new_c[4]
         }
         return {"status": "Cart Updated", "cart": format_new_c}, 200
-
+    @v2.doc(security='apikey')
     @jwt_required
     def delete(self, id):
         cur.execute("SELECT * FROM carts WHERE id={};".format(id))
