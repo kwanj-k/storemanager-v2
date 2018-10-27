@@ -37,29 +37,30 @@ class Stores(Resource):
         Create a store
         """
         json_data = request.get_json(force=True)
-        new_store_validator(json_data)
-        storecheck = get_store_by_name(json_data['name'])
-        if storecheck:
-            return {"message":"Store name already exists"},409
-        store_reg = Store(json_data['name'],
-                          json_data['category'])
-        store_reg.create_store()
-        data = store_reg.json_dump()
-        cur.execute(
-            "SELECT * FROM stores WHERE name='{}';".format(data['name']))
-        store = cur.fetchone()
-        store_id = store[0]
-        role = 0
-        usercheck = get_user_by_email(json_data['email'])
-        if usercheck:
-            return {"message":"The user already exists"},409
-        sup_ad_reg = User(store_id, role,
-                          json_data['email'],
-                          json_data['password'])
-        sup_ad_reg.create_user()
-        user = sup_ad_reg.json_dump()
-        res = {"status": "Success!",
-               "message": "Store successfully created", "data": data, "user": user}, 201
+        res = new_store_validator(json_data)
+        if not res:
+            storecheck = get_store_by_name(json_data['name'])
+            if storecheck:
+                res = {"message":"Store name already exists"},409
+            store_reg = Store(json_data['name'],
+                            json_data['category'])
+            store_reg.create_store()
+            data = store_reg.json_dump()
+            cur.execute(
+                "SELECT * FROM stores WHERE name='{}';".format(data['name']))
+            store = cur.fetchone()
+            store_id = store[0]
+            role = 0
+            usercheck = get_user_by_email(json_data['email'])
+            if usercheck:
+                res = {"message":"The user already exists"},409
+            sup_ad_reg = User(store_id, role,
+                            json_data['email'],
+                            json_data['password'])
+            sup_ad_reg.create_user()
+            user = sup_ad_reg.json_dump()
+            res = {"status": "Success!",
+                "message": "Store successfully created", "data": data, "user": user}, 201
         return res
 
 
@@ -90,20 +91,22 @@ class AddAdmin(Resource):
         Add Admin
         """
         json_data = request.get_json(force=True)
-        login_validator(json_data)
-        email = get_jwt_identity()
-        newad = get_user_by_email(json_data['email'])
-        if newad and newad[2] <= 1:
-            return {"message":"User already exists and is Admin already"},409
-        user = get_user_by_email(email)
-        store_id = user[1]
-        role = 1
-        user_reg = User(store_id,
-                        role,
-                        json_data['email'],
-                        json_data['password'])
-        user_reg.create_user()
-        return {"status": "Success!", "data": user_reg.json_dump()}, 201
+        res =login_validator(json_data)
+        if not res:
+            email = get_jwt_identity()
+            newad = get_user_by_email(json_data['email'])
+            if newad and newad[2] <= 1:
+                res = {"message":"User already exists and is Admin already"},409
+            user = get_user_by_email(email)
+            store_id = user[1]
+            role = 1
+            user_reg = User(store_id,
+                            role,
+                            json_data['email'],
+                            json_data['password'])
+            user_reg.create_user()
+            res = {"status": "Success!", "data": user_reg.json_dump()}, 201
+        return res
 
 
 @u2.route('attendant')
@@ -117,17 +120,19 @@ class AddAttendant(Resource):
         Add Attendant
         """
         json_data = request.get_json(force=True)
-        login_validator(json_data)
-        newattendant = get_user_by_email(json_data['email'])
-        if newattendant and newattendant[2] == 2:
-            return {"message":"User already exists and is an Attendant"},409
-        email = get_jwt_identity()
-        user = get_user_by_email(email)
-        store_id = user[0]
-        role = 2
-        user_reg = User(store_id,
-                        role,
-                        json_data['email'],
-                        json_data['password'])
-        user_reg.create_user()
-        return {"status": "Success!", "data": user_reg.json_dump()}, 201
+        res = login_validator(json_data)
+        if not res:
+            newattendant = get_user_by_email(json_data['email'])
+            if newattendant and newattendant[2] == 2:
+                res = {"message":"User already exists and is an Attendant"},409
+            email = get_jwt_identity()
+            user = get_user_by_email(email)
+            store_id = user[0]
+            role = 2
+            user_reg = User(store_id,
+                            role,
+                            json_data['email'],
+                            json_data['password'])
+            user_reg.create_user()
+            res = {"status": "Success!", "data": user_reg.json_dump()}, 201
+        return res

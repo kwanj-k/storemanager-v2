@@ -6,6 +6,7 @@ import re
 from functools import wraps
 
 # Third party import
+from flask import abort
 from flask_jwt_extended import get_jwt_identity
 
 # Local app imports
@@ -30,6 +31,7 @@ def common(l, d):
             if gv == "":
                 msg = 'The {} can not be empty'.format(i)
                 return {"message":msg},400
+                #abort(400,msg)
 
 def commonp(d):
 
@@ -50,39 +52,43 @@ def new_store_validator(k):
     """
 
     p_l = ['name', 'category', 'email', 'password']
-    common(p_l, k)
-    for i, v in k.items():
-        if not isinstance(v, str):
-            msg = 'The {} field is supposed to be a string'.format(i)
-            return {"message":msg},406
-        if i == 'name' or \
-                i == 'category' or i == 'username':
-            if len(v) <= 4:
-                msg = 'The {} must have atleast five characters'.format(i)
-                return {"message":msg},406
-        if i == 'password':
-            if len(i) < 8:
-                msg = 'The {} must have atleast eight characters'
-                return {"message":msg},406
-        if i == 'email':
-            if not \
-                    re.match(r"^[_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,4})$", v):
-                msg = 'Please input a valid email'
-                return {"message":msg},406
+    res = common(p_l, k)
+    if not res:
+        for i, v in k.items():
+            if not isinstance(v, str):
+                msg = 'The {} field is supposed to be a string'.format(i)
+                res = {"message":msg},406
+            if i == 'name' or \
+                    i == 'category' or i == 'username':
+                if len(v) <= 4:
+                    msg = 'The {} must have atleast five characters'.format(i)
+                    res = {"message":msg},406
+            if i == 'password':
+                if len(i) < 8:
+                    msg = 'The {} must have atleast eight characters'
+                    res= {"message":msg},406
+            if i == 'email':
+                if not \
+                        re.match(r"^[_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,4})$", v):
+                    msg = 'Please input a valid email'
+                    res = {"message":msg},406
+    return res
 
 def login_validator(k):
     p_l = ['email', 'password']
-    common(p_l, k)
+    res = common(p_l, k)
+    return res
 
 
 def product_validator(k):
     """
     A create new product user input validator
     """
-
     pay_load = ['name', 'inventory', 'price']
-    common(pay_load, k)
-    commonp(k)
+    res = common(pay_load, k)
+    if not res:
+        res = commonp(k)
+    return res
 
 
 def sales_validator(k):
@@ -91,11 +97,13 @@ def sales_validator(k):
     """
 
     pay_load = ['number']
-    common(pay_load, k)
-    for i in k.values():
-        if not isinstance(i, int):
-            msg = 'Number of products should be an int'
-            return {"message":msg},406
+    res = common(pay_load, k)
+    if not res:
+        for i in k.values():
+            if not isinstance(i, int):
+                msg = 'Number of products should be an int'
+                res = {"message":msg},406
+    return res
 
 
 def category_validator(k):
@@ -116,12 +124,14 @@ def product_update_validator(k):
     Product update user input validator
     """
 
-    pay_load = ['name', 'inventory', 'price']
+    pay_load = ['name', 'inventory', 'price'] 
     for i in k.keys():
         if i not in pay_load:
             msg = 'The field {} is not required'.format(i)
-            return {"message":msg},400
-    commonp(k)
+            res = {"message":msg},400
+    if not res:
+        res = commonp(k)
+    return res
 
 
 def super_admin_required(f):

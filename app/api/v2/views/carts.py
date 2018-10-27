@@ -113,38 +113,41 @@ class CartDetail(Resource):
         Update a product on a cart
         """
         json_data = request.get_json(force=True)
-        sales_validator(json_data)
-        cur.execute("SELECT * FROM carts WHERE id={};".format(id))
-        product = cur.fetchone()
-        seller = get_user_by_email(get_jwt_identity())
-        seller_id = seller[0]
-        if not product or product[1] != seller_id:
-            return {"message":"That product is not in the cart"},404
-        cur.execute(
-            "SELECT * FROM products WHERE name='{}';".format(product[2]))
-        p = cur.fetchone()
-        number = json_data['number']
-        if p[3] < int(number):
-            msg = 'There are only {0} {1} available '.format(p[3], p[2])
-            abort(406, msg)
-        new_amnt = number * p[4]
-        cur.execute(
-            "UPDATE carts SET number={0},amount={1} WHERE id ={2}".format(
-                number, new_amnt, id))
-        conn.commit()
-        new_p_inv = product[3] - int(number)
-        cur.execute(
-            "UPDATE products SET inventory= inventory + '{}' WHERE name ='{}'".format(
-                new_p_inv, product[2]))
-        conn.commit()
-        cur.execute("SELECT * FROM carts WHERE id={};".format(id))
-        new_c = cur.fetchone()
-        format_new_c = {
-            "product": new_c[2],
-            "number": new_c[3],
-            "amount": new_c[4]
-        }
-        return {"status": "Cart Updated", "cart": format_new_c}, 200
+        res = sales_validator(json_data)
+        if not res:
+            cur.execute("SELECT * FROM carts WHERE id={};".format(id))
+            product = cur.fetchone()
+            seller = get_user_by_email(get_jwt_identity())
+            seller_id = seller[0]
+            if not product or product[1] != seller_id:
+                res = {"message":"That product is not in the cart"},404
+            cur.execute(
+                "SELECT * FROM products WHERE name='{}';".format(product[2]))
+            p = cur.fetchone()
+            number = json_data['number']
+            if p[3] < int(number):
+                msg = 'There are only {0} {1} available '.format(p[3], p[2])
+                abort(406, msg)
+            new_amnt = number * p[4]
+            cur.execute(
+                "UPDATE carts SET number={0},amount={1} WHERE id ={2}".format(
+                    number, new_amnt, id))
+            conn.commit()
+            new_p_inv = product[3] - int(number)
+            cur.execute(
+                "UPDATE products SET inventory= inventory + '{}' WHERE name ='{}'".format(
+                    new_p_inv, product[2]))
+            conn.commit()
+            cur.execute("SELECT * FROM carts WHERE id={};".format(id))
+            new_c = cur.fetchone()
+            format_new_c = {
+                "product": new_c[2],
+                "number": new_c[3],
+                "amount": new_c[4]
+            }
+            res = {"status": "Cart Updated", "cart": format_new_c}, 200
+        return res
+        
     @v2.doc(security='apikey')
     @jwt_required
     def delete(self, id):

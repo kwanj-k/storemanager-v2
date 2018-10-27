@@ -175,7 +175,7 @@ class ProductCategoryUpdate(Resource):
         product = cur.fetchone()
         if not product or product[1] != store_id:
             msg = 'Product does not exist'
-            return {"messsage":msg},404
+            return {"message":msg},404
         category_name = category[2]
         cur.execute(
             "UPDATE products SET category='{}' WHERE id ='{}'".format(
