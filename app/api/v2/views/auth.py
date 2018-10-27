@@ -74,9 +74,16 @@ class Login(Resource):
         Login
         """
         json_data = request.get_json(force=True)
-        user = get_user_by_email(json_data['email'])
-        epass = json_data['password']
-        if not user or not check_password_hash(user[4], epass):
+        email = "".join(json_data['email'].split())
+        password = "".join(json_data['password'].split())
+        if email  == '':
+            msg = 'The email field can not be empty'
+            return {"message":msg},400
+        if password=='':
+            msg = 'The password field can not be empty'
+            return {"message":msg},400
+        user = get_user_by_email(email)
+        if not user or not check_password_hash(user[4], password):
             return {"message":"Invalid credentials.If new,create a store first"},400
         access_token = create_access_token(identity=json_data['email'])
         return {"status": "Success!", "token": access_token}, 200
