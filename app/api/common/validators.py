@@ -125,10 +125,12 @@ def product_update_validator(k):
     """
 
     pay_load = ['name', 'inventory', 'price'] 
-    for i in k.keys():
-        if i not in pay_load:
-            msg = 'The field {} is not required'.format(i)
-            res = {"message":msg},400
+    def keycheck(pl,dict):
+        for i in dict.keys():
+            if i not in pl:
+                msg = 'The field {} is not required'.format(i)
+                return {"message":msg},400
+    res = keycheck(pay_load,k)
     if not res:
         res = commonp(k)
     return res
