@@ -40,6 +40,20 @@ class TestAuth(Settings):
         self.assertEqual(res1['message'], 'Store successfully created')
         self.assertEqual(res.status_code, 201)
 
+    def test_signup_twice(self):
+        """
+        Test store signup
+        """
+        self.app.post(signup_url,
+                            data=json.dumps(self.new_store),
+                            content_type='application/json')
+        res = self.app.post(signup_url,
+                            data=json.dumps(self.new_store),
+                            content_type='application/json')
+        res1 = json.loads(res.data.decode())
+        self.assertEqual(res1['message'], 'Store name already exists')
+        self.assertEqual(res.status_code, 409)
+
     def test_login(self):
         """Test for the login endpoint."""
         self.app.post(signup_url,

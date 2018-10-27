@@ -165,7 +165,7 @@ class ProductDetail(Resource):
             "inventory": product[3],
             "price": product[4]
         }
-        return {"status": "Deleted!", "pr0duct": format_p}, 200
+        return {"status": "Deleted!", "product": format_p}, 200
 
     @v2.doc(security='apikey')
     @jwt_required
@@ -183,12 +183,12 @@ class ProductDetail(Resource):
             store_id = get_store_id(get_jwt_identity())
             if not product or product[1] != store_id:
                 msg = 'Product does not exist'
-                res= {"message":msg},404
+                return {"message":msg},404
             product_name = product[2]
             if product[3] < int(number):
-                msg = 'There are only {0} {1} available '.format(
+                msg = 'There are only {0} {1} available'.format(
                     product[3], product_name)
-                return {"message":msg},406
+                return {"message":msg},400
             amount = number * product[4]
             seller = get_user_by_email(get_jwt_identity())
             seller_id = seller[0]

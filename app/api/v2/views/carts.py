@@ -55,6 +55,7 @@ class Carts(Resource):
             all_cart_items.append(format_cart)
         return {"status": "Success!", "TotalAmount": totalamount,
                 "Items": all_cart_items}, 200
+
     @v2.doc(security='apikey')
     @jwt_required
     def post(self):
@@ -126,7 +127,7 @@ class CartDetail(Resource):
             p = cur.fetchone()
             number = json_data['number']
             if p[3] < int(number):
-                msg = 'There are only {0} {1} available '.format(p[3], p[2])
+                msg = 'There are only {0} {1} available'.format(p[3], p[2])
                 return {"message":msg},400
             new_amnt = number * p[4]
             cur.execute(
@@ -156,7 +157,7 @@ class CartDetail(Resource):
         seller = get_user_by_email(get_jwt_identity())
         seller_id = seller[0]
         if not product or product[1] != seller_id:
-            return {"message":"That product is not in the cart"},404
+            return {"message":"That product is not in the cart"},400
         new_p_inv = product[3]
         cur.execute(
             "UPDATE products SET inventory= inventory + '{}' WHERE name ='{}'".format(

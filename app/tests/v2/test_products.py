@@ -192,3 +192,14 @@ class TestProducts(Settings):
         res1 = json.loads(res.data.decode())
         self.assertEqual(res1['status'], 'Deleted!')
         self.assertEqual(res.status_code, 200)
+
+    def test_non_existing_product_delete(self):
+        """Test non_existing_product_delete"""
+        login = self.autheniticate()
+        token = json.loads(login.data.decode()).get('token')
+        res = self.app.delete('/api/v2/products/1',
+                              headers=dict(Authorization="Bearer " + token),
+                              content_type='application/json')
+        res1 = json.loads(res.data.decode())
+        self.assertEqual(res1['message'], 'Product does not exist')
+        self.assertEqual(res.status_code, 404)
