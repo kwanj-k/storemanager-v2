@@ -112,6 +112,9 @@ class ProductDetail(Resource):
         if not product or product[1] != store_id:
             msg = {"message": 'Product does not exist'}, 404
             return msg
+        name = product[2]
+        inventory = product[3]
+        price = product[4]
         if 'name' in json_data:
             name = json_data['name']
         if 'inventory' in json_data:

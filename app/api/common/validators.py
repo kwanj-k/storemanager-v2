@@ -118,7 +118,10 @@ def product_update_validator(k):
     """
 
     pay_load = ['name', 'inventory', 'price']
-    common(pay_load, k)
+    for i in k.keys():
+        if i not in pay_load:
+            msg = 'The field {} is not required'.format(i)
+            return {"message":msg},400
     commonp(k)
 
 
