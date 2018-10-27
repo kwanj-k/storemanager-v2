@@ -9,9 +9,11 @@ from flask_restplus import Resource
 from flask import request, abort
 from werkzeug.security import check_password_hash
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
+from flask_mail import Message
 
 # Local imports
 from app.api.v2.models.accounts import Store, User
+from app.apps import mail
 from app.api.v2.db_config import conn
 from app.api.v2.views.expect import StoreEtn, UserEtn
 from app.api.v2.db_config import conn
@@ -95,16 +97,29 @@ class AddAdmin(Resource):
         if not res:
             email = get_jwt_identity()
             newad = get_user_by_email(json_data['email'])
-            if newad and newad[2] <= 1:
-                res = {"message":"User already exists and is Admin already"},409
+            if  newad and newad[2]<=1:
+                return {"message":"User already exists and is Admin already"},409
+            if newad and newad[2] == 2:
+                cur.execute("DELETE FROM users WHERE email={};".format(json_data['email']))
+                conn.commit()
             user = get_user_by_email(email)
             store_id = user[1]
             role = 1
+            cur.execute(
+                "SELECT * FROM stores WHERE id='{}';".format(store_id))
+            store = cur.fetchone()
+            store_name = store[1]
             user_reg = User(store_id,
                             role,
                             json_data['email'],
                             json_data['password'])
             user_reg.create_user()
+            email = json_data['email']
+            passd = json_data['password']
+            msg = Message('{} new admin'.format(store_name), recipients = [email])
+            body = 'You have been made admin at {} Store.\nUse the email < {} > and the password < {} > to login at the StoreMangerSite.'.format(store_name,email,passd)
+            msg.body = body
+            mail.send(msg)
             res = {"status": "Success!", "data": user_reg.json_dump()}, 201
         return res
 
@@ -123,8 +138,11 @@ class AddAttendant(Resource):
         res = login_validator(json_data)
         if not res:
             newattendant = get_user_by_email(json_data['email'])
-            if newattendant and newattendant[2] == 2:
-                res = {"message":"User already exists and is an Attendant"},409
+            if  newattendant and newattendant[2] == 2:
+                return {"message":"User already exists and is an Attendant"},409
+            if newattendant and newattendant[2] > 0:
+                cur.execute("DELETE FROM users WHERE email={};".format(json_data['email']))
+                conn.commit()
             email = get_jwt_identity()
             user = get_user_by_email(email)
             store_id = user[0]
@@ -134,5 +152,15 @@ class AddAttendant(Resource):
                             json_data['email'],
                             json_data['password'])
             user_reg.create_user()
+            cur.execute(
+                "SELECT * FROM stores WHERE id='{}';".format(store_id))
+            store = cur.fetchone()
+            store_name = store[1]
+            email = json_data['email']
+            passd = json_data['password']
+            msg = Message('{} new Attendant'.format(store_name), recipients = [email])
+            body = 'You have been made Attendant at {} Store.\nUse the email < {} > and the password < {} > to login at the StoreMangerSite.'.format(store_name,email,passd)
+            msg.body = body
+            mail.send(msg)
             res = {"status": "Success!", "data": user_reg.json_dump()}, 201
         return res

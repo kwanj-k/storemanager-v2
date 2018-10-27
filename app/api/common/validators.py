@@ -46,6 +46,13 @@ def commonp(d):
                 msg = 'Please make sure the {} is a number'.format(i)
                 return {"message":msg},400
 
+def valid_email(email):
+    if not \
+    re.match(r"^[_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,4})$", email):
+        msg = 'Please input a valid email'
+        return {"message":msg},406
+
+
 def new_store_validator(k):
     """
     A create new store user input validator
@@ -68,10 +75,7 @@ def new_store_validator(k):
                     msg = 'The {} must have atleast eight characters'
                     res= {"message":msg},406
             if i == 'email':
-                if not \
-                        re.match(r"^[_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,4})$", v):
-                    msg = 'Please input a valid email'
-                    res = {"message":msg},406
+                res = valid_email(v)
     return res
 
 def login_validator(k):
