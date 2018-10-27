@@ -120,14 +120,14 @@ class CartDetail(Resource):
             seller = get_user_by_email(get_jwt_identity())
             seller_id = seller[0]
             if not product or product[1] != seller_id:
-                res = {"message":"That product is not in the cart"},404
+                return {"message":"That product is not in the cart"},404
             cur.execute(
                 "SELECT * FROM products WHERE name='{}';".format(product[2]))
             p = cur.fetchone()
             number = json_data['number']
             if p[3] < int(number):
                 msg = 'There are only {0} {1} available '.format(p[3], p[2])
-                abort(406, msg)
+                return {"message":msg},400
             new_amnt = number * p[4]
             cur.execute(
                 "UPDATE carts SET number={0},amount={1} WHERE id ={2}".format(

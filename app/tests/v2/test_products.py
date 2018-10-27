@@ -115,6 +115,16 @@ class TestProducts(Settings):
         self.assertEqual(res1['status'], 'Success!')
         self.assertEqual(res.status_code, 200)
 
+    def test_get_all_products_when_no_products(self):
+        """Test get_all_products_when_no_products"""
+        login = self.autheniticate()
+        token = json.loads(login.data.decode()).get('token')
+        res = self.app.get(product_url,
+                           headers=dict(Authorization="Bearer " + token))
+        res1 = json.loads(res.data.decode())
+        self.assertEqual(res1['message'], 'There are no products at the moment')
+        self.assertEqual(res.status_code, 404)
+
     def test_get_product_by_id(self):
         """Test for the get product by id endpoint."""
         login = self.autheniticate()
@@ -128,6 +138,16 @@ class TestProducts(Settings):
         res1 = json.loads(res.data.decode())
         self.assertEqual(res1['status'], 'Success!')
         self.assertEqual(res.status_code, 200)
+
+    def test_get_non_existing_product_by_id(self):
+        """Test get_non_existing_product_by_id"""
+        login = self.autheniticate()
+        token = json.loads(login.data.decode()).get('token')
+        res = self.app.get("/api/v2/products/1",
+                           headers=dict(Authorization="Bearer " + token))
+        res1 = json.loads(res.data.decode())
+        self.assertEqual(res1['message'], 'Product does not exist')
+        self.assertEqual(res.status_code, 404)
 
     def test_product_update(self):
         """Test for the product update endpoint."""
@@ -144,6 +164,19 @@ class TestProducts(Settings):
         res1 = json.loads(res.data.decode())
         self.assertEqual(res1['status'], 'Updated!')
         self.assertEqual(res.status_code, 200)
+
+
+    def test_non_existing_product_update(self):
+        """Test non_existing_product_update"""
+        login = self.autheniticate()
+        token = json.loads(login.data.decode()).get('token')
+        res = self.app.put('/api/v2/products/1',
+                           headers=dict(Authorization="Bearer " + token),
+                           data=json.dumps(self.pdata),
+                           content_type='application/json')
+        res1 = json.loads(res.data.decode())
+        self.assertEqual(res1['message'], 'Product does not exist')
+        self.assertEqual(res.status_code, 404)
 
     def test_product_delete(self):
         """Test for the product delete endpoint."""

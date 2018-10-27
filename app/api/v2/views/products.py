@@ -77,6 +77,9 @@ class Products(Resource):
                         'category': p[5],
                         'added_at': p[6]}
             all_products.append(format_p)
+        if len(all_products) < 1:
+            res= {"message":"There are no products at the moment"},404
+            return res
         return {"status": "Success!", "products": all_products}, 200
 
 
@@ -117,7 +120,7 @@ class ProductDetail(Resource):
             product = cur.fetchone()
             store_id = get_store_id(get_jwt_identity())
             if not product or product[1] != store_id:
-                res = {"message": 'Product does not exist'}, 404
+                return {"message": 'Product does not exist'}, 404
             name = product[2]
             inventory = product[3]
             price = product[4]
@@ -185,7 +188,7 @@ class ProductDetail(Resource):
             if product[3] < int(number):
                 msg = 'There are only {0} {1} available '.format(
                     product[3], product_name)
-                res= {"message":msg},406
+                return {"message":msg},406
             amount = number * product[4]
             seller = get_user_by_email(get_jwt_identity())
             seller_id = seller[0]

@@ -43,7 +43,7 @@ class Stores(Resource):
         if not res:
             storecheck = get_store_by_name(json_data['name'])
             if storecheck:
-                res = {"message":"Store name already exists"},409
+                return {"message":"Store name already exists"},409
             store_reg = Store(json_data['name'],
                             json_data['category'])
             store_reg.create_store()
@@ -55,7 +55,7 @@ class Stores(Resource):
             role = 0
             usercheck = get_user_by_email(json_data['email'])
             if usercheck:
-                res = {"message":"The user already exists"},409
+                return {"message":"The user already exists"},409
             sup_ad_reg = User(store_id, role,
                             json_data['email'],
                             json_data['password'])
