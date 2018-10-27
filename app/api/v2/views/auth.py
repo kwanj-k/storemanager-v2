@@ -145,7 +145,7 @@ class AddAttendant(Resource):
                 conn.commit()
             email = get_jwt_identity()
             user = get_user_by_email(email)
-            store_id = user[0]
+            store_id = user[1]
             role = 2
             user_reg = User(store_id,
                             role,
