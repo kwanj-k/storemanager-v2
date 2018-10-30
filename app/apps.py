@@ -11,6 +11,7 @@ from datetime import timedelta
 from flask import Flask
 from flask_jwt_extended import JWTManager
 from flask_mail import Mail
+from flask_cors import CORS
 
 # Local imports
 from .api.v2.db_config import create_tables, drop_all
@@ -43,6 +44,9 @@ def create_app(config_name):
     app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access']
     jwt.init_app(app)
     mail.init_app(app)
+    CORS(app)
+
+    
 
     cur = conn.cursor()
     @jwt.token_in_blacklist_loader
