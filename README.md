@@ -113,6 +113,7 @@ Test the following endpoints:
 | DELETE   /cart/Id              | Delete a product in a cart              |
 | POST     /cart                 | Sell an entire cart                     |
 | DELETE   /cart                 | Delete an entire cart                   |
+| POST     /auth/logout          | Logout a user                           |
 |                                                                          |
 
 ### Admin endpoints
