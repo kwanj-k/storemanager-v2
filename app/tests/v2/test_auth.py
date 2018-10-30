@@ -20,6 +20,12 @@ class TestAuth(Settings):
         "email": "mwangikwanj@gmail.com",
         "password": "iamroot"
     }
+    enew_store = {
+        "name": "KidsCity2",
+        "category": "Botique",
+        "email": "mwangikwanj@gmail.com",
+        "password": "iamroot"
+    }
     login_data = {
         "email": "mwangikwanj@gmail.com",
         "password": "iamroot"
@@ -40,7 +46,7 @@ class TestAuth(Settings):
         self.assertEqual(res1['message'], 'Store successfully created')
         self.assertEqual(res.status_code, 201)
 
-    def test_signup_twice(self):
+    def test_signup_twice_same_name(self):
         """
         Test store signup
         """
@@ -52,6 +58,20 @@ class TestAuth(Settings):
                             content_type='application/json')
         res1 = json.loads(res.data.decode())
         self.assertEqual(res1['message'], 'Store name already exists')
+        self.assertEqual(res.status_code, 409)
+
+    def test_signup_twice_with_same_email(self):
+        """
+        Test store signup
+        """
+        self.app.post(signup_url,
+                            data=json.dumps(self.new_store),
+                            content_type='application/json')
+        res = self.app.post(signup_url,
+                            data=json.dumps(self.enew_store),
+                            content_type='application/json')
+        res1 = json.loads(res.data.decode())
+        self.assertEqual(res1['message'], 'The user already exists')
         self.assertEqual(res.status_code, 409)
 
     def test_login(self):
