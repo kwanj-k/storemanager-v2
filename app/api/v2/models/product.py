@@ -15,9 +15,8 @@ class Product:
     """
     The product definition
     """
-    cat = 'Category-not-set'
 
-    def __init__(self, store_id, name, inventory, price,):
+    def __init__(self, store_id, name, inventory, price,category):
         """
         Product constructor
         """
@@ -25,7 +24,7 @@ class Product:
         self.name = name
         self.inventory = inventory
         self.price = price
-        self.category = Product.cat
+        self.category = category
         self.created_at = dt
 
     def add_product(self):

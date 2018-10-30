@@ -35,22 +35,28 @@ class Products(Resource):
         Add a product to the manager
         """
         json_data = request.get_json(force=True)
-        product_validator(json_data)
-        store_id = get_store_id(get_jwt_identity())
-        cur.execute(
-            "SELECT * FROM products WHERE name='{}';".format(json_data['name']))
-        product = cur.fetchone()
-        if product and product[1] == store_id:
-            msg = 'Product already exists.Update product inventory instead'
-            return {"message":msg},409
-        new_pro = Product(store_id, json_data['name'],
-                          json_data['inventory'],
-                          json_data['price'])
-        new_pro.add_product()
-        res = new_pro.json_dump()
-        res = {"status": "Success!",
-               "message": "Product successfully added", "data": res}, 201
+        res = product_validator(json_data)
+        if not res:
+            store_id = get_store_id(get_jwt_identity())
+            cur.execute(
+                "SELECT * FROM products WHERE name='{}';".format(json_data['name']))
+            product = cur.fetchone()
+            if product and product[1] == store_id:
+                msg = 'Product already exists.Update product inventory instead'
+                return {"status":"Failed!","message":msg},409
+            cat_name ='Category-not-set'
+            new_pro = Product(store_id, json_data['name'],
+                            json_data['inventory'],
+                            json_data['price'],
+                            cat_name)
+            new_pro.add_product()
+            res = new_pro.json_dump()
+            res = {"status": "Success!",
+                "message": "Product successfully added", "data": res}, 201
         return res
+
+
+
 
     @v2.doc(security='apikey')
     @jwt_required
@@ -71,6 +77,9 @@ class Products(Resource):
                         'category': p[5],
                         'added_at': p[6]}
             all_products.append(format_p)
+        if len(all_products) < 1:
+            res= {"status":"Failed!","message":"There are no products at the moment"},404
+            return res
         return {"status": "Success!", "products": all_products}, 200
 
 
@@ -87,7 +96,7 @@ class ProductDetail(Resource):
         store_id = get_store_id(get_jwt_identity())
         if not product or product[1] != store_id:
             msg = 'Product does not exist'
-            return {"message":msg},404
+            return {"status":"Failed!","message":msg},404
         format_p = {
             "product_name": product[2],
             "inventory": product[3],
@@ -105,32 +114,36 @@ class ProductDetail(Resource):
         Update a product
         """
         json_data = request.get_json(force=True)
-        product_update_validator(json_data)
-        cur.execute("SELECT * FROM products WHERE id={};".format(id))
-        product = cur.fetchone()
-        store_id = get_store_id(get_jwt_identity())
-        if not product or product[1] != store_id:
-            msg = {"message": 'Product does not exist'}, 404
-            return msg
-        if 'name' in json_data:
-            name = json_data['name']
-        if 'inventory' in json_data:
-            inventory = json_data['inventory']
-        if 'price' in json_data:
-            price = json_data['price']
-        cur.execute("UPDATE products SET name='{}',inventory='{}',price='{}'\
-        WHERE id ={}".format(name, inventory, price, id))
-        conn.commit()
-        cur.execute("SELECT * FROM products WHERE id={};".format(id))
-        new_p = cur.fetchone()
-        format_new_p = {
-            "product_name": new_p[2],
-            "inventory": new_p[3],
-            "price": new_p[4],
-            'category': new_p[5],
-            'added_at': new_p[6]
-        }
-        return {"status": "Updated!", "product": format_new_p}, 200
+        res = product_update_validator(json_data)
+        if not res:
+            cur.execute("SELECT * FROM products WHERE id={};".format(id))
+            product = cur.fetchone()
+            store_id = get_store_id(get_jwt_identity())
+            if not product or product[1] != store_id:
+                return {"status":"Failed!","message": 'Product does not exist'}, 404
+            name = product[2]
+            inventory = product[3]
+            price = product[4]
+            if 'name' in json_data:
+                name = json_data['name']
+            if 'inventory' in json_data:
+                inventory = json_data['inventory']
+            if 'price' in json_data:
+                price = json_data['price']
+            cur.execute("UPDATE products SET name='{}',inventory='{}',price='{}'\
+            WHERE id ={}".format(name, inventory, price, id))
+            conn.commit()
+            cur.execute("SELECT * FROM products WHERE id={};".format(id))
+            new_p = cur.fetchone()
+            format_new_p = {
+                "product_name": new_p[2],
+                "inventory": new_p[3],
+                "price": new_p[4],
+                'category': new_p[5],
+                'added_at': new_p[6]
+            }
+            res = {"status": "Updated!", "product": format_new_p}, 200
+        return res
 
     @v2.doc(security='apikey')
     @jwt_required
@@ -144,7 +157,7 @@ class ProductDetail(Resource):
         store_id = get_store_id(get_jwt_identity())
         if not product or product[1] != store_id:
             msg = 'Product does not exist'
-            return {"message":msg},404
+            return {"status":"Failed!","message":msg},404
         cur.execute("DELETE FROM products WHERE id={};".format(id))
         conn.commit()
         format_p = {
@@ -152,7 +165,7 @@ class ProductDetail(Resource):
             "inventory": product[3],
             "price": product[4]
         }
-        return {"status": "Deleted!", "pr0duct": format_p}, 200
+        return {"status": "Deleted!", "product": format_p}, 200
 
     @v2.doc(security='apikey')
     @jwt_required
@@ -162,27 +175,29 @@ class ProductDetail(Resource):
         Add a product to cart
         """
         json_data = request.get_json(force=True)
-        sales_validator(json_data)
-        number = json_data['number']
-        cur.execute("SELECT * FROM products WHERE id={};".format(id))
-        product = cur.fetchone()
-        store_id = get_store_id(get_jwt_identity())
-        if not product or product[1] != store_id:
-            msg = 'Product does not exist'
-            return {"message":msg},404
-        product_name = product[2]
-        if product[3] < int(number):
-            msg = 'There are only {0} {1} available '.format(
-                product[3], product_name)
-            return {"message":msg},406
-        amount = number * product[4]
-        seller = get_user_by_email(get_jwt_identity())
-        seller_id = seller[0]
-        new_cart = Cart(seller_id, product_name, number, amount)
-        new_cart.add_to_cart()
-        res = new_cart.json_dump()
-        new_inventory = product[3] - number
-        cur.execute(
-            "UPDATE products SET inventory={0} WHERE id ={1}".format(
-                new_inventory, id))
-        return {"status": "Added to cart", "product": res}
+        res = sales_validator(json_data)
+        if not res:
+            number = json_data['number']
+            cur.execute("SELECT * FROM products WHERE id={};".format(id))
+            product = cur.fetchone()
+            store_id = get_store_id(get_jwt_identity())
+            if not product or product[1] != store_id:
+                msg = 'Product does not exist'
+                return {"status":"Failed!","message":msg},404
+            product_name = product[2]
+            if product[3] < int(number):
+                msg = 'There are only {0} {1} available'.format(
+                    product[3], product_name)
+                return {"status":"Failed!","message":msg},400
+            amount = number * product[4]
+            seller = get_user_by_email(get_jwt_identity())
+            seller_id = seller[0]
+            new_cart = Cart(seller_id, product_name, number, amount)
+            new_cart.add_to_cart()
+            res = new_cart.json_dump()
+            new_inventory = product[3] - number
+            cur.execute(
+                "UPDATE products SET inventory={0} WHERE id ={1}".format(
+                    new_inventory, id))
+            res = {"status":"Success!","message":"Added to cart", "product": res}
+        return res

@@ -69,6 +69,11 @@ def tables():
         added_at varchar);
         """
 
+    tokens = """
+        CREATE TABLE IF NOT EXISTS tokens(id serial PRIMARY KEY,
+        token varchar);
+        """
+
     carts = """
         CREATE TABLE IF NOT EXISTS carts(id serial PRIMARY KEY,
         seller_id int,
@@ -103,7 +108,7 @@ def tables():
         name varchar,
         created_at varchar);
         """
-    queries = [stores, users, products, sales, carts, categories]
+    queries = [stores, users, products, sales, carts, categories,tokens]
 
     return queries
 
