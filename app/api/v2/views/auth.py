@@ -43,7 +43,7 @@ class Stores(Resource):
         if not res:
             storecheck = get_store_by_name(json_data['name'])
             if storecheck:
-                return {"message":"Store name already exists"},409
+                return {"status":"Failed!", "message":"Store name already exists"},409
             store_reg = Store(json_data['name'],
                             json_data['category'])
             store_reg.create_store()
@@ -55,7 +55,7 @@ class Stores(Resource):
             role = 0
             usercheck = get_user_by_email(json_data['email'])
             if usercheck:
-                return {"message":"The user already exists"},409
+                return {"status":"Failed!","message":"The user already exists"},409
             sup_ad_reg = User(store_id, role,
                             json_data['email'],
                             json_data['password'])
@@ -78,13 +78,13 @@ class Login(Resource):
         password = "".join(json_data['password'].split())
         if email  == '':
             msg = 'The email field can not be empty'
-            return {"message":msg},400
+            return {"status":"Failed!","message":msg},400
         if password=='':
             msg = 'The password field can not be empty'
-            return {"message":msg},400
+            return {"status":"Failed!","message":msg},400
         user = get_user_by_email(email)
         if not user or not check_password_hash(user[4], password):
-            return {"message":"Invalid credentials.If new,create a store first"},400
+            return {"status":"Failed!","message":"Invalid credentials.If new,create a store first"},400
         access_token = create_access_token(identity=json_data['email'])
         return {"status": "Success!", "token": access_token}, 200
 
@@ -105,7 +105,7 @@ class AddAdmin(Resource):
             email = get_jwt_identity()
             newad = get_user_by_email(json_data['email'])
             if  newad and newad[2]<=1:
-                return {"message":"User already exists and is Admin already"},409
+                return {"status":"Failed!","message":"User already exists and is Admin already"},409
             if newad and newad[2] == 2:
                 cur.execute("DELETE FROM users WHERE email={};".format(json_data['email']))
                 conn.commit()
@@ -146,7 +146,7 @@ class AddAttendant(Resource):
         if not res:
             newattendant = get_user_by_email(json_data['email'])
             if  newattendant and newattendant[2] == 2:
-                return {"message":"User already exists and is an Attendant"},409
+                return {"status":"Failed!","message":"User already exists and is an Attendant"},409
             if newattendant and newattendant[2] > 0:
                 cur.execute("DELETE FROM users WHERE email={};".format(json_data['email']))
                 conn.commit()

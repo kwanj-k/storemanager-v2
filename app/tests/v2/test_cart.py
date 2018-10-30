@@ -42,7 +42,7 @@ class TestCart(Settings):
                             headers=dict(Authorization="Bearer " + token),
                             content_type='application/json')
         res1 = json.loads(res.data.decode())
-        self.assertEqual(res1['status'], 'Added to cart')
+        self.assertEqual(res1['message'], 'Added to cart')
         self.assertEqual(res.status_code, 200)
 
     def test_add_to_cart_more_products_than_available(self):
