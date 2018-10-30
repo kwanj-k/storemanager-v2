@@ -19,7 +19,7 @@ from .helpers import get_user_by_email, get_store_id
 from app.api.common.validators import sales_validator
 
 
-add_to_cart = CartEtn.carts
+add_to_cart = CartEtn().carts
 v2 = CartEtn().v2
 
 
@@ -108,6 +108,7 @@ class Carts(Resource):
 @v2.route('/<int:id>')
 class CartDetail(Resource):
     @v2.doc(security='apikey')
+    @v2.expect(add_to_cart)
     @jwt_required
     def put(self, id):
         """
@@ -125,7 +126,7 @@ class CartDetail(Resource):
             cur.execute(
                 "SELECT * FROM products WHERE name='{}';".format(product[2]))
             p = cur.fetchone()
-            number = json_data['number']
+            number = int(json_data['number'])
             if p[3] < int(number):
                 msg = 'There are only {0} {1} available'.format(p[3], p[2])
                 return {"message":msg},400
@@ -134,9 +135,12 @@ class CartDetail(Resource):
                 "UPDATE carts SET number={0},amount={1} WHERE id ={2}".format(
                     number, new_amnt, id))
             conn.commit()
-            new_p_inv = product[3] - int(number)
+            if number > product[3]:
+                new_p_inv = p[3] - (number-product[3])
+            #if number < product[3]:
+            new_p_inv =p[3] + (product[3] - number)
             cur.execute(
-                "UPDATE products SET inventory= inventory + '{}' WHERE name ='{}'".format(
+                "UPDATE products SET inventory= '{}' WHERE name ='{}'".format(
                     new_p_inv, product[2]))
             conn.commit()
             cur.execute("SELECT * FROM carts WHERE id={};".format(id))

@@ -35,6 +35,7 @@ def common(expected_payload, json_data):
                 return {"status":"Failed!","message":msg},400
 
 
+
 def commonp(json_data):
     """
     Function receives the input json data
