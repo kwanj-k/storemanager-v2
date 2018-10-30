@@ -8,7 +8,7 @@ i.e signup,login,addadmin and attendant
 from flask_restplus import Resource
 from flask import request, abort
 from werkzeug.security import check_password_hash
-from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
+from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required,get_raw_jwt
 from flask_mail import Message
 
 # Local imports
@@ -88,6 +88,20 @@ class Login(Resource):
         access_token = create_access_token(identity=json_data['email'])
         return {"status": "Success!", "token": access_token}, 200
 
+@u2.route('auth/logout')
+class Logout(Resource):
+    @u2.doc(security='apikey')
+    @jwt_required
+    def post(self):
+        """
+        Logout
+        """
+        jti = get_raw_jwt()['jti']
+        b_token= """INSERT INTO
+                tokens (token) VALUES ('{}')""" .format(jti)
+        cur.execute(b_token)
+        conn.commit()
+        return {"status":"Success!","message": "Successfully logged out"}, 200
 
 @u2.route('admin')
 class AddAdmin(Resource):

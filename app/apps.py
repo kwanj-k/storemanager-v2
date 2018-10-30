@@ -15,6 +15,7 @@ from flask_mail import Mail
 # Local imports
 from .api.v2.db_config import create_tables, drop_all
 from instance.config import app_config
+from .api.v2.db_config import conn
 
 
 jwt = JWTManager()
@@ -38,8 +39,18 @@ def create_app(config_name):
     app.config['MAIL_PASSWORD'] = password
     app.config['MAIL_USE_TLS'] = False
     app.config['MAIL_USE_SSL'] = True
+    app.config['JWT_BLACKLIST_ENABLED'] = True
+    app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access']
     jwt.init_app(app)
     mail.init_app(app)
+
+    cur = conn.cursor()
+    @jwt.token_in_blacklist_loader
+    def check_if_token_in_blacklist(decrypted_token):
+        jti = decrypted_token['jti']
+        cur.execute("SELECT * FROM tokens WHERE token='{}';".format(jti))
+        black_token= cur.fetchone()
+        return black_token
 
     from .api.v2.routes import v_2 as v2
     from .api.v2.routes import v2 as jwtapi
