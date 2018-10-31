@@ -13,14 +13,15 @@ from flask_jwt_extended import get_jwt_identity, jwt_required
 from app.api.v2.models.category import Category
 from app.api.v2.models.product import Product
 from app.api.v2.db_config import cur
-from app.api.v2.views.expect import CategoryEtn,ProductEtn
+from app.api.v2.views.expect import CategoryEtn, ProductEtn
 from app.api.v2.db_config import conn
 from .helpers import get_user_by_email, get_store_id
-from app.api.common.validators import category_validator, admin_required,product_validator
+from app.api.common.validators import category_validator, admin_required, product_validator
 
 new_cat = CategoryEtn().categories
 v2 = CategoryEtn.v2
 new_product = ProductEtn().products
+
 
 @v2.route('')
 class Categories(Resource):
@@ -34,8 +35,8 @@ class Categories(Resource):
         """
         current_user = get_jwt_identity()
         if current_user is None:
-            msg='Please login to access to access this resource'
-            return {"status":"Failed!","message":msg},400
+            msg = 'Please login to access to access this resource'
+            return {"status": "Failed!", "message": msg}, 400
         json_data = request.get_json(force=True)
         res = category_validator(json_data)
         if res:
@@ -46,7 +47,7 @@ class Categories(Resource):
             "SELECT * FROM categories WHERE name='{}';".format(category_name))
         category = cur.fetchone()
         if category and category[1] == store_id:
-            return {"message":"Category already exists"},409
+            return {"message": "Category already exists"}, 409
         new_cat = Category(store_id, category_name)
         new_cat.add_category()
         return {"status": "Success!", "Category": new_cat.json_dump()}, 201
@@ -59,14 +60,14 @@ class Categories(Resource):
         """
         current_user = get_jwt_identity()
         if current_user is None:
-            msg='Please login to access to access this resource'
-            return {"status":"Failed!","message":msg},400
+            msg = 'Please login to access to access this resource'
+            return {"status": "Failed!", "message": msg}, 400
         store_id = get_store_id(get_jwt_identity())
         cur.execute(
             "SELECT * FROM categories WHERE store_id='{}';".format(store_id))
         categories = cur.fetchall()
         if len(categories) < 1:
-            return {"message":"There are no categories at this time"},404
+            return {"message": "There are no categories at this time"}, 404
         all_categories = []
         for c in categories:
             format_cat = {
@@ -90,8 +91,8 @@ class CategoryDetail(Resource):
         """
         current_user = get_jwt_identity()
         if current_user is None:
-            msg='Please login to access to access this resource'
-            return {"status":"Failed!","message":msg},400
+            msg = 'Please login to access to access this resource'
+            return {"status": "Failed!", "message": msg}, 400
         json_data = request.get_json(force=True)
         category_validator(json_data)
         cur.execute("SELECT * FROM categories WHERE id={};".format(id))
@@ -104,10 +105,10 @@ class CategoryDetail(Resource):
         if 'name' in json_data:
             name = json_data['name'].lower()
         cur.execute("SELECT * FROM categories WHERE name='{}';".format(name))
-        category_check = cur.fetchone()  
+        category_check = cur.fetchone()
         if category_check:
             msg = 'That category already exists'
-            return {"status":"Failed","message":msg},406
+            return {"status": "Failed", "message": msg}, 406
         cur.execute(
             "UPDATE categories SET name='{}' WHERE id ={}".format(
                 name, id))
@@ -128,8 +129,8 @@ class CategoryDetail(Resource):
         """
         current_user = get_jwt_identity()
         if current_user is None:
-            msg='Please login to access to access this resource'
-            return {"status":"Failed!","message":msg},400
+            msg = 'Please login to access to access this resource'
+            return {"status": "Failed!", "message": msg}, 400
         cur.execute("SELECT * FROM categories WHERE id={};".format(id))
         category = cur.fetchone()
         store_id = get_store_id(get_jwt_identity())
@@ -151,20 +152,20 @@ class ProductCategory(Resource):
     @jwt_required
     @admin_required
     @v2.expect(new_product)
-    def post(self,id):
+    def post(self, id):
         """
         Add a new product to a category
         """
         current_user = get_jwt_identity()
         if current_user is None:
-            msg='Please login to access to access this resource'
-            return {"status":"Failed!","message":msg},400
+            msg = 'Please login to access to access this resource'
+            return {"status": "Failed!", "message": msg}, 400
         store_id = get_store_id(get_jwt_identity())
         cur.execute("SELECT * FROM categories WHERE id='{}';".format(id))
         category = cur.fetchone()
         if not category or category[1] != store_id:
             msg = 'Category does not exist'
-            return {"message":msg},404
+            return {"message": msg}, 404
         json_data = request.get_json(force=True)
         product_validator(json_data)
         cur.execute(
@@ -172,7 +173,7 @@ class ProductCategory(Resource):
         product = cur.fetchone()
         if product and product[1] == store_id:
             msg = 'Product already exists.Update product inventory instead'
-            return {"message":msg},409
+            return {"message": msg}, 409
         cat_name = category[2]
         new_pro = Product(store_id, json_data['name'],
                           json_data['inventory'],
@@ -199,19 +200,19 @@ class ProductCategoryUpdate(Resource):
         """
         current_user = get_jwt_identity()
         if current_user is None:
-            msg='Please login to access to access this resource'
-            return {"status":"Failed!","message":msg},400
+            msg = 'Please login to access to access this resource'
+            return {"status": "Failed!", "message": msg}, 400
         store_id = get_store_id(get_jwt_identity())
         cur.execute("SELECT * FROM categories WHERE id='{}';".format(c_id))
         category = cur.fetchone()
         if not category or category[1] != store_id:
             msg = 'Category does not exist'
-            return {"message":msg},404
+            return {"message": msg}, 404
         cur.execute("SELECT * FROM products WHERE id={};".format(p_id))
         product = cur.fetchone()
         if not product or product[1] != store_id:
             msg = 'Product does not exist'
-            return {"message":msg},404
+            return {"message": msg}, 404
         category_name = category[2]
         cur.execute(
             "UPDATE products SET category='{}' WHERE id ='{}'".format(

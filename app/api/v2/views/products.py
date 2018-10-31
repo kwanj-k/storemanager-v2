@@ -36,8 +36,8 @@ class Products(Resource):
         """
         current_user = get_jwt_identity()
         if current_user is None:
-            msg='Please login to access to access this resource'
-            return {"status":"Failed!","message":msg},400
+            msg = 'Please login to access to access this resource'
+            return {"status": "Failed!", "message": msg}, 400
         json_data = request.get_json(force=True)
         res = product_validator(json_data)
         if not res:
@@ -47,20 +47,17 @@ class Products(Resource):
             product = cur.fetchone()
             if product and product[1] == store_id:
                 msg = 'Product already exists.Update product inventory instead'
-                return {"status":"Failed!","message":msg},409
-            cat_name ='Category-not-set'
+                return {"status": "Failed!", "message": msg}, 409
+            cat_name = 'Category-not-set'
             new_pro = Product(store_id, json_data['name'].lower(),
-                            json_data['inventory'],
-                            json_data['price'],
-                            cat_name)
+                              json_data['inventory'],
+                              json_data['price'],
+                              cat_name)
             new_pro.add_product()
             res = new_pro.json_dump()
             res = {"status": "Success!",
-                "message": "Product successfully added", "data": res}, 201
+                   "message": "Product successfully added", "data": res}, 201
         return res
-
-
-
 
     @v2.doc(security='apikey')
     @jwt_required
@@ -70,8 +67,8 @@ class Products(Resource):
         """
         current_user = get_jwt_identity()
         if current_user is None:
-            msg='Please login to access to access this resource'
-            return {"status":"Failed!","message":msg},400
+            msg = 'Please login to access to access this resource'
+            return {"status": "Failed!", "message": msg}, 400
         store_id = get_store_id(get_jwt_identity())
         cur.execute(
             "SELECT * FROM products WHERE store_id={};".format(store_id))
@@ -86,7 +83,8 @@ class Products(Resource):
                         'added_at': p[6]}
             all_products.append(format_p)
         if len(all_products) < 1:
-            res= {"status":"Failed!","message":"There are no products at the moment"},404
+            res = {"status": "Failed!",
+                   "message": "There are no products at the moment"}, 404
             return res
         return {"status": "Success!", "products": all_products}, 200
 
@@ -101,14 +99,14 @@ class ProductDetail(Resource):
         """
         current_user = get_jwt_identity()
         if current_user is None:
-            msg='Please login to access to access this resource'
-            return {"status":"Failed!","message":msg},400
+            msg = 'Please login to access to access this resource'
+            return {"status": "Failed!", "message": msg}, 400
         cur.execute("SELECT * FROM products WHERE id={};".format(id))
         product = cur.fetchone()
         store_id = get_store_id(get_jwt_identity())
         if not product or product[1] != store_id:
             msg = 'Product does not exist'
-            return {"status":"Failed!","message":msg},404
+            return {"status": "Failed!", "message": msg}, 404
         format_p = {
             "product_name": product[2],
             "inventory": product[3],
@@ -127,8 +125,8 @@ class ProductDetail(Resource):
         """
         current_user = get_jwt_identity()
         if current_user is None:
-            msg='Please login to access to access this resource'
-            return {"status":"Failed!","message":msg},400
+            msg = 'Please login to access to access this resource'
+            return {"status": "Failed!", "message": msg}, 400
         json_data = request.get_json(force=True)
         res = product_update_validator(json_data)
         if not res:
@@ -136,7 +134,8 @@ class ProductDetail(Resource):
             product = cur.fetchone()
             store_id = get_store_id(get_jwt_identity())
             if not product or product[1] != store_id:
-                return {"status":"Failed!","message": 'Product does not exist'}, 404
+                return {"status": "Failed!",
+                        "message": 'Product does not exist'}, 404
             name = product[2]
             inventory = product[3]
             price = product[4]
@@ -150,7 +149,7 @@ class ProductDetail(Resource):
             product_check = cur.fetchone()
             if product_check:
                 msg = 'That product already exists'
-                return {"status":"Failed!","message":msg},406
+                return {"status": "Failed!", "message": msg}, 406
             cur.execute("UPDATE products SET name='{}',inventory='{}',price='{}'\
             WHERE id ={}".format(name, inventory, price, id))
             conn.commit()
@@ -175,14 +174,14 @@ class ProductDetail(Resource):
         """
         current_user = get_jwt_identity()
         if current_user is None:
-            msg='Please login to access to access this resource'
-            return {"status":"Failed!","message":msg},400
+            msg = 'Please login to access to access this resource'
+            return {"status": "Failed!", "message": msg}, 400
         cur.execute("SELECT * FROM products WHERE id={};".format(id))
         product = cur.fetchone()
         store_id = get_store_id(get_jwt_identity())
         if not product or product[1] != store_id:
             msg = 'Product does not exist'
-            return {"status":"Failed!","message":msg},404
+            return {"status": "Failed!", "message": msg}, 404
         cur.execute("DELETE FROM products WHERE id={};".format(id))
         conn.commit()
         format_p = {
@@ -201,8 +200,8 @@ class ProductDetail(Resource):
         """
         current_user = get_jwt_identity()
         if current_user is None:
-            msg='Please login to access to access this resource'
-            return {"status":"Failed!","message":msg},400
+            msg = 'Please login to access to access this resource'
+            return {"status": "Failed!", "message": msg}, 400
         json_data = request.get_json(force=True)
         res = sales_validator(json_data)
         if not res:
@@ -212,12 +211,12 @@ class ProductDetail(Resource):
             store_id = get_store_id(get_jwt_identity())
             if not product or product[1] != store_id:
                 msg = 'Product does not exist'
-                return {"status":"Failed!","message":msg},404
+                return {"status": "Failed!", "message": msg}, 404
             product_name = product[2]
             if product[3] < int(number):
                 msg = 'There are only {0} {1} available'.format(
                     product[3], product_name)
-                return {"status":"Failed!","message":msg},400
+                return {"status": "Failed!", "message": msg}, 400
             amount = number * product[4]
             seller = get_user_by_email(get_jwt_identity())
             seller_id = seller[0]
@@ -228,5 +227,8 @@ class ProductDetail(Resource):
             cur.execute(
                 "UPDATE products SET inventory={0} WHERE id ={1}".format(
                     new_inventory, id))
-            res = {"status":"Success!","message":"Added to cart", "product": res}
+            res = {
+                "status": "Success!",
+                "message": "Added to cart",
+                "product": res}
         return res
