@@ -114,6 +114,7 @@ Test the following endpoints:
 | POST     /cart                 | Sell an entire cart                     |
 | DELETE   /cart                 | Delete an entire cart                   |
 | POST     /auth/logout          | Logout a user                           |
+| PUT     /editpassword/         | Edit password                           | 
 |                                                                          |
 
 ### Admin endpoints
@@ -139,6 +140,7 @@ Test the following endpoints:
 | EndPoint                       | Functionality                           |
 | -------------------------------|:---------------------------------------:|
 | POST     /admin/               | Add an admin                            | 
+| DELETE   /users/               | Revoke a user's access to the site      | 
 |                                                                          |
 
 
