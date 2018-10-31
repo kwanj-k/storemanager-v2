@@ -34,6 +34,7 @@ def create_tables():
         cur.execute(q)
     conn.commit()
 
+
 def drop_all():
     """
     Method to drop all the tables in the database
@@ -108,16 +109,6 @@ def tables():
         name varchar,
         created_at varchar);
         """
-    queries = [stores, users, products, sales, carts, categories,tokens]
+    queries = [stores, users, products, sales, carts, categories, tokens]
 
     return queries
-
-
-
-
-
-
-
-
-
-

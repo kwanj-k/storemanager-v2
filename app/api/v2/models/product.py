@@ -16,7 +16,7 @@ class Product:
     The product definition
     """
 
-    def __init__(self, store_id, name, inventory, price,category):
+    def __init__(self, store_id, name, inventory, price, category):
         """
         Product constructor
         """

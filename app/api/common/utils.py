@@ -6,7 +6,7 @@ A place for reuseable code
 from datetime import datetime
 
 
-#Third party import
+# Third party import
 from flask_jwt_extended import get_jwt_identity
 
 d1 = datetime.now()
@@ -19,8 +19,9 @@ def myconverter(o):
 
 dt = myconverter(d)
 
+
 def logged_in_checker():
     current_user = get_jwt_identity()
     if current_user is None:
-        msg='Please login to access to access this resource'
-        return {"status":"Failed!","message":msg},400
+        msg = 'Please login to access to access this resource'
+        return {"status": "Failed!", "message": msg}, 400

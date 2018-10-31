@@ -63,8 +63,8 @@ class TestAuth(Settings):
         Test store signup
         """
         self.app.post(signup_url,
-                            data=json.dumps(self.new_store),
-                            content_type='application/json')
+                      data=json.dumps(self.new_store),
+                      content_type='application/json')
         res = self.app.post(signup_url,
                             data=json.dumps(self.new_store),
                             content_type='application/json')
@@ -77,8 +77,8 @@ class TestAuth(Settings):
         Test store signup
         """
         self.app.post(signup_url,
-                            data=json.dumps(self.new_store),
-                            content_type='application/json')
+                      data=json.dumps(self.new_store),
+                      content_type='application/json')
         res = self.app.post(signup_url,
                             data=json.dumps(self.enew_store),
                             content_type='application/json')
@@ -119,7 +119,9 @@ class TestAuth(Settings):
                             data=json.dumps(self.empty_pass),
                             content_type='application/json')
         res1 = json.loads(res.data.decode())
-        self.assertEqual(res1['message'], 'The password field can not be empty')
+        self.assertEqual(
+            res1['message'],
+            'The password field can not be empty')
         self.assertEqual(res.status_code, 400)
 
     def test_login_with_invalid_credentials(self):
@@ -131,7 +133,9 @@ class TestAuth(Settings):
                             data=json.dumps(self.invalid_credentials),
                             content_type='application/json')
         res1 = json.loads(res.data.decode())
-        self.assertEqual(res1['message'], 'Invalid credentials.If new,create a store first')
+        self.assertEqual(
+            res1['message'],
+            'Invalid credentials.If new,create a store first')
         self.assertEqual(res.status_code, 400)
 
     def test_addadmin(self):
@@ -156,15 +160,17 @@ class TestAuth(Settings):
         login = self.autheniticate()
         token = json.loads(login.data.decode()).get('token')
         self.app.post(admin_url,
-                            data=json.dumps(self.add_data),
-                            headers=dict(Authorization="Bearer " + token),
-                            content_type='application/json')
+                      data=json.dumps(self.add_data),
+                      headers=dict(Authorization="Bearer " + token),
+                      content_type='application/json')
         res = self.app.post(admin_url,
                             data=json.dumps(self.add_data),
                             headers=dict(Authorization="Bearer " + token),
                             content_type='application/json')
         res1 = json.loads(res.data.decode())
-        self.assertEqual(res1['message'], 'User already exists and is Admin already')
+        self.assertEqual(
+            res1['message'],
+            'User already exists and is Admin already')
         self.assertEqual(res.status_code, 409)
 
     def test_addattendant(self):
@@ -180,5 +186,3 @@ class TestAuth(Settings):
         res1 = json.loads(res.data.decode())
         self.assertEqual(res1['status'], 'Success!')
         self.assertEqual(res.status_code, 201)
-
-

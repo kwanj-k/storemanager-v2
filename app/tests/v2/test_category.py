@@ -43,9 +43,9 @@ class TestCategories(Settings):
         login = self.autheniticate()
         token = json.loads(login.data.decode()).get('token')
         self.app.post(category_url,
-                            data=json.dumps(self.data),
-                            headers=dict(Authorization="Bearer " + token),
-                            content_type='application/json')
+                      data=json.dumps(self.data),
+                      headers=dict(Authorization="Bearer " + token),
+                      content_type='application/json')
         res = self.app.post(category_url,
                             data=json.dumps(self.data),
                             headers=dict(Authorization="Bearer " + token),
@@ -75,7 +75,9 @@ class TestCategories(Settings):
         res = self.app.get(category_url,
                            headers=dict(Authorization="Bearer " + token))
         res1 = json.loads(res.data.decode())
-        self.assertEqual(res1['message'], 'There are no categories at this time')
+        self.assertEqual(
+            res1['message'],
+            'There are no categories at this time')
         self.assertEqual(res.status_code, 404)
 
     def test_category_update(self):
@@ -93,7 +95,6 @@ class TestCategories(Settings):
         res1 = json.loads(res.data.decode())
         self.assertEqual(res1['status'], 'Updated!')
         self.assertEqual(res.status_code, 200)
-
 
     def test_category_update_to_existing_category(self):
         """Test category_update_to_existing_category."""
@@ -172,7 +173,6 @@ class TestCategories(Settings):
         self.assertEqual(res1['status'], 'Updated!')
         self.assertEqual(res.status_code, 200)
 
-
     def test_add_non_existing_category_to_product(self):
         """Test add_non_existing_category_to_product"""
         login = self.autheniticate()
@@ -203,7 +203,6 @@ class TestCategories(Settings):
         self.assertEqual(res1['message'], 'Product does not exist')
         self.assertEqual(res.status_code, 404)
 
-
     def test_add_new_product_to_category(self):
         """Test the add add_new_product_to_category"""
         login = self.autheniticate()
@@ -213,9 +212,9 @@ class TestCategories(Settings):
                       headers=dict(Authorization="Bearer " + token),
                       content_type='application/json')
         res = self.app.post(addnew_product_to_category_url,
-                      data=json.dumps(self.product_data),
-                      headers=dict(Authorization="Bearer " + token),
-                      content_type='application/json')
+                            data=json.dumps(self.product_data),
+                            headers=dict(Authorization="Bearer " + token),
+                            content_type='application/json')
         res1 = json.loads(res.data.decode())
         self.assertEqual(res1['message'], 'Product successfully added')
         self.assertEqual(res.status_code, 201)
@@ -225,13 +224,12 @@ class TestCategories(Settings):
         login = self.autheniticate()
         token = json.loads(login.data.decode()).get('token')
         res = self.app.post(addnew_product_to_category_url,
-                      data=json.dumps(self.product_data),
-                      headers=dict(Authorization="Bearer " + token),
-                      content_type='application/json')
+                            data=json.dumps(self.product_data),
+                            headers=dict(Authorization="Bearer " + token),
+                            content_type='application/json')
         res1 = json.loads(res.data.decode())
         self.assertEqual(res1['message'], 'Category does not exist')
         self.assertEqual(res.status_code, 404)
-
 
     def test_add_existing_product_category(self):
         """Test add_existing_product_category"""
@@ -246,9 +244,11 @@ class TestCategories(Settings):
                       headers=dict(Authorization="Bearer " + token),
                       content_type='application/json')
         res = self.app.post(addnew_product_to_category_url,
-                      data=json.dumps(self.product_data),
-                      headers=dict(Authorization="Bearer " + token),
-                      content_type='application/json')
+                            data=json.dumps(self.product_data),
+                            headers=dict(Authorization="Bearer " + token),
+                            content_type='application/json')
         res1 = json.loads(res.data.decode())
-        self.assertEqual(res1['message'], 'Product already exists.Update product inventory instead')
+        self.assertEqual(
+            res1['message'],
+            'Product already exists.Update product inventory instead')
         self.assertEqual(res.status_code, 409)

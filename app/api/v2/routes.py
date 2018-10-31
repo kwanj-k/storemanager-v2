@@ -23,7 +23,7 @@ authorizations = {
         'in': 'header',
         'name': 'Authorization'
     }}
-    
+
 
 v_2 = Blueprint('v_2', __name__, url_prefix="/api/v2")
 api = Api(v_2)
