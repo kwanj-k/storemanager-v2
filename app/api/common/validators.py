@@ -33,6 +33,13 @@ def common(expected_payload, json_data):
             if value_without_white_space == "":
                 msg = 'The {} can not be empty'.format(item)
                 return {"status":"Failed!","message":msg},400
+        if item == 'name':
+            try:
+                if int(value):
+                    msg='Please use a valid name'
+                    return {"status":"Failed!","message":msg},406
+            except:continue
+
 
 
 
@@ -45,6 +52,11 @@ def commonp(json_data):
             if isinstance(value, int):
                 msg = 'Name of the product can not be an integer'
                 return {"status":"Failed!","message":msg},400
+            try:
+                if int(value):
+                    msg='Please use a valid name'
+                    return {"status":"Failed!","message":msg},406
+            except:continue
         if item == 'inventory' or item == 'price':
             if not isinstance(value, int):
                 msg = 'Please make sure the {} is a number'.format(item)
@@ -52,7 +64,7 @@ def commonp(json_data):
 
 def valid_email(email):
     if not \
-    re.match(r"^[_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,4})$", email):
+    re.match(r"^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$", email):
         msg = 'Please input a valid email'
         return {"status":"Failed!","message":msg},406
 
@@ -74,6 +86,11 @@ def new_store_validator(json_data):
                 if len(value) <= 4:
                     msg = 'The {} must have atleast five characters'.format(item)
                     res = {"status":"Failed!","message":msg},406
+                try:
+                    if int(value):
+                        msg='Please use a valid {}'.format(item)
+                        return {"status":"Failed!","message":msg},406
+                except:continue
             if item == 'password':
                 if len(item) < 8:
                     msg = 'The {} must have atleast eight characters'
@@ -85,6 +102,8 @@ def new_store_validator(json_data):
 def login_validator(json_data):
     expected_pay_load = ['email', 'password']
     res = common(expected_pay_load, json_data)
+    if not res:
+        res = valid_email(json_data['email'])
     return res
 
 
@@ -120,11 +139,12 @@ def category_validator(json_data):
     """
 
     pay_load = ['name']
-    common(pay_load, json_data)
+    res = common(pay_load, json_data)
     for item in json_data.values():
         if isinstance(item, int):
             msg = 'The category should be a string'
-            return {"status":"Failed!","message":msg},406
+            res = {"status":"Failed!","message":msg},406
+    return res
 
 
 def product_update_validator(json_data):
@@ -149,6 +169,9 @@ def super_admin_required(f):
     @wraps(f)
     def decorator(*args, **kwargs):
         current_user = get_user_by_email(get_jwt_identity())
+        if current_user is None:
+            msg='Please login to access to access this resource'
+            return {"status":"Failed!","message":msg},400
         r = current_user[2]
         """
         The r : role
@@ -165,6 +188,9 @@ def admin_required(f):
     @wraps(f)
     def decorator(*args, **kwargs):
         current_user = get_user_by_email(get_jwt_identity())
+        if current_user is None:
+            msg='Please login to access to access this resource'
+            return {"status":"Failed!","message":msg},400
         r = current_user[2]
         """
         The r : role

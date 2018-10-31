@@ -34,18 +34,22 @@ class Products(Resource):
         """
         Add a product to the manager
         """
+        current_user = get_jwt_identity()
+        if current_user is None:
+            msg='Please login to access to access this resource'
+            return {"status":"Failed!","message":msg},400
         json_data = request.get_json(force=True)
         res = product_validator(json_data)
         if not res:
             store_id = get_store_id(get_jwt_identity())
             cur.execute(
-                "SELECT * FROM products WHERE name='{}';".format(json_data['name']))
+                "SELECT * FROM products WHERE name='{}';".format(json_data['name'].lower()))
             product = cur.fetchone()
             if product and product[1] == store_id:
                 msg = 'Product already exists.Update product inventory instead'
                 return {"status":"Failed!","message":msg},409
             cat_name ='Category-not-set'
-            new_pro = Product(store_id, json_data['name'],
+            new_pro = Product(store_id, json_data['name'].lower(),
                             json_data['inventory'],
                             json_data['price'],
                             cat_name)
@@ -64,6 +68,10 @@ class Products(Resource):
         """
         Get all products
         """
+        current_user = get_jwt_identity()
+        if current_user is None:
+            msg='Please login to access to access this resource'
+            return {"status":"Failed!","message":msg},400
         store_id = get_store_id(get_jwt_identity())
         cur.execute(
             "SELECT * FROM products WHERE store_id={};".format(store_id))
@@ -91,6 +99,10 @@ class ProductDetail(Resource):
         """
         Get single product
         """
+        current_user = get_jwt_identity()
+        if current_user is None:
+            msg='Please login to access to access this resource'
+            return {"status":"Failed!","message":msg},400
         cur.execute("SELECT * FROM products WHERE id={};".format(id))
         product = cur.fetchone()
         store_id = get_store_id(get_jwt_identity())
@@ -113,6 +125,10 @@ class ProductDetail(Resource):
         """
         Update a product
         """
+        current_user = get_jwt_identity()
+        if current_user is None:
+            msg='Please login to access to access this resource'
+            return {"status":"Failed!","message":msg},400
         json_data = request.get_json(force=True)
         res = product_update_validator(json_data)
         if not res:
@@ -125,11 +141,16 @@ class ProductDetail(Resource):
             inventory = product[3]
             price = product[4]
             if 'name' in json_data:
-                name = json_data['name']
+                name = json_data['name'].lower()
             if 'inventory' in json_data:
                 inventory = json_data['inventory']
             if 'price' in json_data:
                 price = json_data['price']
+            cur.execute("SELECT * FROM products WHERE name='{}';".format(name))
+            product_check = cur.fetchone()
+            if product_check:
+                msg = 'That product already exists'
+                return {"status":"Failed!","message":msg},406
             cur.execute("UPDATE products SET name='{}',inventory='{}',price='{}'\
             WHERE id ={}".format(name, inventory, price, id))
             conn.commit()
@@ -152,6 +173,10 @@ class ProductDetail(Resource):
         """
         Delete a product
         """
+        current_user = get_jwt_identity()
+        if current_user is None:
+            msg='Please login to access to access this resource'
+            return {"status":"Failed!","message":msg},400
         cur.execute("SELECT * FROM products WHERE id={};".format(id))
         product = cur.fetchone()
         store_id = get_store_id(get_jwt_identity())
@@ -174,6 +199,10 @@ class ProductDetail(Resource):
         """
         Add a product to cart
         """
+        current_user = get_jwt_identity()
+        if current_user is None:
+            msg='Please login to access to access this resource'
+            return {"status":"Failed!","message":msg},400
         json_data = request.get_json(force=True)
         res = sales_validator(json_data)
         if not res:

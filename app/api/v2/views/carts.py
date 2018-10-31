@@ -41,6 +41,10 @@ class Carts(Resource):
         """
         Get a cart
         """
+        current_user = get_jwt_identity()
+        if current_user is None:
+            msg='Please login to access to access this resource'
+            return {"status":"Failed!","message":msg},400
         cart = cart_helper(get_jwt_identity())
         if not cart:
             return {"message":"You don\'t have any cart at the moment"},404
@@ -62,6 +66,10 @@ class Carts(Resource):
         """
         Sell a cart
         """
+        current_user = get_jwt_identity()
+        if current_user is None:
+            msg='Please login to access to access this resource'
+            return {"status":"Failed!","message":msg},400
         cart = cart_helper(get_jwt_identity())
         store_id = get_store_id(get_jwt_identity())
         if not cart:
@@ -91,6 +99,10 @@ class Carts(Resource):
         """
         Delete an entire cart
         """
+        current_user = get_jwt_identity()
+        if current_user is None:
+            msg='Please login to access to access this resource'
+            return {"status":"Failed!","message":msg},400
         cart = cart_helper(get_jwt_identity())
         if not cart:
             return {"message":"You don\'t have any cart at the moment"},404
@@ -114,6 +126,10 @@ class CartDetail(Resource):
         """
         Update a product on a cart
         """
+        current_user = get_jwt_identity()
+        if current_user is None:
+            msg='Please login to access to access this resource'
+            return {"status":"Failed!","message":msg},400
         json_data = request.get_json(force=True)
         res = sales_validator(json_data)
         if not res:
@@ -137,7 +153,6 @@ class CartDetail(Resource):
             conn.commit()
             if number > product[3]:
                 new_p_inv = p[3] - (number-product[3])
-            #if number < product[3]:
             new_p_inv =p[3] + (product[3] - number)
             cur.execute(
                 "UPDATE products SET inventory= '{}' WHERE name ='{}'".format(
@@ -156,6 +171,13 @@ class CartDetail(Resource):
     @v2.doc(security='apikey')
     @jwt_required
     def delete(self, id):
+        """
+        Remove a product from cart
+        """
+        current_user = get_jwt_identity()
+        if current_user is None:
+            msg='Please login to access to access this resource'
+            return {"status":"Failed!","message":msg},400
         cur.execute("SELECT * FROM carts WHERE id={};".format(id))
         product = cur.fetchone()
         seller = get_user_by_email(get_jwt_identity())

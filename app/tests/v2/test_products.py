@@ -165,6 +165,26 @@ class TestProducts(Settings):
         self.assertEqual(res1['status'], 'Updated!')
         self.assertEqual(res.status_code, 200)
 
+    def test_product_update_to_existing_product(self):
+        """Test product_update_to_existing_product"""
+        login = self.autheniticate()
+        token = json.loads(login.data.decode()).get('token')
+        self.app.post(product_url,
+                      data=json.dumps(self.data),
+                      headers=dict(Authorization="Bearer " + token),
+                      content_type='application/json')
+        self.app.post(product_url,
+                      data=json.dumps(self.pdata),
+                      headers=dict(Authorization="Bearer " + token),
+                      content_type='application/json')
+        res = self.app.put('/api/v2/products/1',
+                           headers=dict(Authorization="Bearer " + token),
+                           data=json.dumps(self.pdata),
+                           content_type='application/json')
+        res1 = json.loads(res.data.decode())
+        self.assertEqual(res1['message'], 'That product already exists')
+        self.assertEqual(res.status_code, 406)
+
 
     def test_non_existing_product_update(self):
         """Test non_existing_product_update"""

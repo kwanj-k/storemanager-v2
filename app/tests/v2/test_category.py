@@ -94,6 +94,27 @@ class TestCategories(Settings):
         self.assertEqual(res1['status'], 'Updated!')
         self.assertEqual(res.status_code, 200)
 
+
+    def test_category_update_to_existing_category(self):
+        """Test category_update_to_existing_category."""
+        login = self.autheniticate()
+        token = json.loads(login.data.decode()).get('token')
+        self.app.post(category_url,
+                      data=json.dumps(self.data),
+                      headers=dict(Authorization="Bearer " + token),
+                      content_type='application/json')
+        self.app.post(category_url,
+                      data=json.dumps(self.pdata),
+                      headers=dict(Authorization="Bearer " + token),
+                      content_type='application/json')
+        res = self.app.put('/api/v2/categories/1',
+                           data=json.dumps(self.pdata),
+                           headers=dict(Authorization="Bearer " + token),
+                           content_type='application/json')
+        res1 = json.loads(res.data.decode())
+        self.assertEqual(res1['message'], 'That category already exists')
+        self.assertEqual(res.status_code, 406)
+
     def test_non_existing_category_update(self):
         """Test non_existing_category_update."""
         login = self.autheniticate()
