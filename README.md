@@ -1,5 +1,5 @@
 ## StoreManager-V2  :department_store:
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)  [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com) [![PEP8](https://img.shields.io/badge/code%20style-pep8-green.svg)](https://www.python.org/dev/peps/pep-0008/)  [![Coverage Status](https://coveralls.io/repos/github/kwanj-k/storemanager-v2/badge.svg?branch=ch-readme-%23161404824)](https://coveralls.io/github/kwanj-k/storemanager-v2?branch=ch-readme-%23161404824&service=github)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)  [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com) [![PEP8](https://img.shields.io/badge/code%20style-pep8-green.svg)](https://www.python.org/dev/peps/pep-0008/)  [![Coverage Status](https://coveralls.io/repos/github/kwanj-k/storemanager-v2/badge.svg?branch=bg-validation-%23161617593)](https://coveralls.io/github/kwanj-k/storemanager-v2?branch=bg-validation-%23161617593)
 
 
 ## Summary
@@ -98,7 +98,7 @@ Test the following endpoints:
 
 | EndPoint                       | Functionality                           |
 | -------------------------------|:---------------------------------------:|
-| POST     /stores               | Create a store                          |
+| POST     /signup               | Create a store                          |
 | POST     /auth/login           | Login a user                            |
 |                                                                          |
 
