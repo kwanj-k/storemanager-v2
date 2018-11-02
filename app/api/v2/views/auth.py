@@ -18,7 +18,11 @@ from app.api.v2.db_config import conn
 from app.api.v2.views.expect import StoreEtn, UserEtn, DeleteUserEtn, EditPassEtn
 from app.api.v2.db_config import conn
 from .helpers import get_user_by_email, get_store_by_name
-from app.api.common.validators import login_validator, new_store_validator, super_admin_required, admin_required, valid_email
+from app.api.common.validators import (login_validator,
+                                        new_store_validator,
+                                        super_admin_required, 
+                                        admin_required, 
+                                        valid_email)
 from app.api.common.utils import logged_in_checker
 # cursor to perform database operations
 cur = conn.cursor()

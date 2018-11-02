@@ -11,6 +11,7 @@ login_url = "/api/v2/auth/login"
 signup_url = "/api/v2/signup"
 admin_url = "/api/v2/admin"
 attendant_url = "/api/v2/attendant"
+delete_users_url = "/api/v2/user"
 
 
 class TestAuth(Settings):
@@ -29,6 +30,9 @@ class TestAuth(Settings):
     login_data = {
         "email": "mwangikwanj@gmail.com",
         "password": "iamroot"
+    }
+    del_data = {
+        "email": "mwangikwanj@gmail.com"
     }
     add_data = {
         "email": "mwangiaddmin@gmail.com",
@@ -186,3 +190,4 @@ class TestAuth(Settings):
         res1 = json.loads(res.data.decode())
         self.assertEqual(res1['status'], 'Success!')
         self.assertEqual(res.status_code, 201)
+

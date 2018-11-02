@@ -176,14 +176,14 @@ def super_admin_required(f):
         current_user = get_user_by_email(get_jwt_identity())
         if current_user is None:
             msg = 'Please login to access to access this resource'
-            return {"status": "Failed!", "message": msg}, 400
+            return {"status": "Failed!", "message": msg}, 403
         r = current_user[2]
         """
         The r : role
         """
         if r != 0:
             msg = "Only Super Admin can access these resource"
-            return {"status": "Failed!", "message": msg}, 406
+            return {"status": "Failed!", "message": msg}, 403
         return f(*args, **kwargs)
     return decorator
 
@@ -195,13 +195,15 @@ def admin_required(f):
         current_user = get_user_by_email(get_jwt_identity())
         if current_user is None:
             msg = 'Please login to access to access this resource'
-            return {"status": "Failed!", "message": msg}, 400
+            return {"status": "Failed!", "message": msg}, 403
         r = current_user[2]
         """
         The r : role
         """
         if r == 2 or r == 'Attendant':
             msg = "Only administrators can access these resource"
-            return {"status": "Failed!", "message": msg}, 406
+            return {"status": "Failed!", "message": msg}, 403
         return f(*args, **kwargs)
     return decorator
+
+
