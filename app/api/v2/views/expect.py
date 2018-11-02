@@ -35,6 +35,25 @@ class UserEtn:
     })
 
 
+class EditPassEtn:
+    v0 = Namespace(
+        'Edit password',
+        description='Change password')
+    editpass = v0.model('User0', {
+        'old_password': fields.String(required=True, description='The old user"s password'),
+        'new_password': fields.String(required=True, description='The new user"s password')
+    })
+
+
+class DeleteUserEtn:
+    v1 = Namespace(
+        'Remove user',
+        description='Revoke user\'s access ')
+    deleteuser = v1.model('User1', {
+        'email': fields.String(required=True, description='The user\'s email address')
+    })
+
+
 class ProductEtn:
     """
     Product input data expectations

@@ -58,7 +58,9 @@ class TestCart(Settings):
                             headers=dict(Authorization="Bearer " + token),
                             content_type='application/json')
         res1 = json.loads(res.data.decode())
-        self.assertEqual(res1['message'], 'There are only 24 monster available')
+        self.assertEqual(
+            res1['message'],
+            'There are only 24 monster available')
         self.assertEqual(res.status_code, 400)
 
     def test_add_non_existing_product_to_cart(self):
@@ -98,7 +100,9 @@ class TestCart(Settings):
         res = self.app.get(cart_url,
                            headers=dict(Authorization="Bearer " + token))
         res1 = json.loads(res.data.decode())
-        self.assertEqual(res1['message'], 'You don\'t have any cart at the moment')
+        self.assertEqual(
+            res1['message'],
+            'You don\'t have any cart at the moment')
         self.assertEqual(res.status_code, 404)
 
     def test_cart_update(self):
@@ -138,9 +142,10 @@ class TestCart(Settings):
                            headers=dict(Authorization="Bearer " + token),
                            content_type='application/json')
         res1 = json.loads(res.data.decode())
-        self.assertEqual(res1['message'], 'There are only 21 monster available')
+        self.assertEqual(
+            res1['message'],
+            'There are only 21 monster available')
         self.assertEqual(res.status_code, 400)
-
 
     def test_non_existing_cart_product_update(self):
         """Test non_existing_cart_product_update."""
@@ -173,7 +178,6 @@ class TestCart(Settings):
         self.assertEqual(res1['status'], 'Deleted!')
         self.assertEqual(res.status_code, 200)
 
-
     def test_delete_non_existing_product_from_cart(self):
         """Test delete_non_existing_product_from_cart."""
         login = self.autheniticate()
@@ -204,7 +208,6 @@ class TestCart(Settings):
         self.assertEqual(res1['status'], 'Cart Deleted!')
         self.assertEqual(res.status_code, 200)
 
-
     def test_delete_a_non_existing_entire_cart(self):
         """Test delete_a_non_existing_entire_cart."""
         login = self.autheniticate()
@@ -213,7 +216,9 @@ class TestCart(Settings):
                               headers=dict(Authorization="Bearer " + token),
                               content_type='application/json')
         res1 = json.loads(res.data.decode())
-        self.assertEqual(res1['message'], 'You don\'t have any cart at the moment')
+        self.assertEqual(
+            res1['message'],
+            'You don\'t have any cart at the moment')
         self.assertEqual(res.status_code, 404)
 
     def test_sell_cart(self):
@@ -243,5 +248,7 @@ class TestCart(Settings):
                             headers=dict(Authorization="Bearer " + token),
                             content_type='application/json')
         res1 = json.loads(res.data.decode())
-        self.assertEqual(res1['message'], 'You don\'t have any cart at the moment')
+        self.assertEqual(
+            res1['message'],
+            'You don\'t have any cart at the moment')
         self.assertEqual(res.status_code, 404)

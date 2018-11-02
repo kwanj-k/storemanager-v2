@@ -28,6 +28,10 @@ class Sales(Resource):
         """
         Get all sales
         """
+        current_user = get_jwt_identity()
+        if current_user is None:
+            msg = 'Please login to access to access this resource'
+            return {"status": "Failed!", "message": msg}, 400
         store_id = get_store_id(get_jwt_identity())
         cur.execute("SELECT * FROM sales WHERE store_id={};".format(store_id))
         sales = cur.fetchall()
