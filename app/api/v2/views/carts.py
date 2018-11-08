@@ -12,9 +12,8 @@ from flask_jwt_extended import get_jwt_identity, jwt_required
 # Local imports
 from app.api.v2.models.cart import Cart
 from app.api.v2.models.sale import Sale
-from app.api.v2.db_config import cur
+from app.api.v2.db_config import cur,conn
 from app.api.v2.views.expect import CartEtn
-from app.api.v2.db_config import conn
 from .helpers import get_user_by_email, get_store_id
 from app.api.common.validators import sales_validator
 
@@ -91,6 +90,7 @@ class Carts(Resource):
             totalamount += c[4]
             sale_order.append(format_sale)
         cur.execute("DELETE FROM carts WHERE seller_id={};".format(seller_id))
+        conn.commit()
         return {"status": "Sold!", "TotalAmount": totalamount,
                 "Items": sale_order}, 201
 
@@ -113,8 +113,12 @@ class Carts(Resource):
             inventory = c[3]
             name = c[2]
             cur.execute(
-                "UPDATE products SET inventory= inventory + '{}' WHERE name ='{}'".format(inventory, name))
+                "UPDATE products SET inventory= inventory + {} WHERE name ='{}'".format(inventory, name))
+            conn.commit()
+
         cur.execute("DELETE FROM carts WHERE seller_id={};".format(seller_id))
+        conn.commit()
+
         return {"status": "Cart Deleted!"}, 200
 
 
@@ -187,10 +191,11 @@ class CartDetail(Resource):
             return {"status": "Failed!","message": "That product is not in the cart"}, 400
         new_p_inv = product[3]
         cur.execute(
-            "UPDATE products SET inventory= inventory + '{}' WHERE name ='{}'".format(
+            "UPDATE products SET inventory= inventory + {} WHERE name ='{}'".format(
                 new_p_inv, product[2]))
         conn.commit()
         cur.execute("DELETE FROM carts WHERE id='{}';".format(id))
+        conn.commit()
         format_c = {
             "product": product[2],
             "number": product[3],
