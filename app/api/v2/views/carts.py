@@ -47,7 +47,7 @@ class Carts(Resource):
             return {"status": "Failed!", "message": msg}, 400
         cart = cart_helper(get_jwt_identity())
         if not cart:
-            return {"message": "You don\'t have any cart at the moment"}, 404
+            return {"status": "Failed!","message": "You don\'t have any cart at the moment"}, 404
         all_cart_items = []
         totalamount = 0
         for c in cart:
@@ -73,7 +73,7 @@ class Carts(Resource):
         cart = cart_helper(get_jwt_identity())
         store_id = get_store_id(get_jwt_identity())
         if not cart:
-            return {"message": "You don\'t have any cart at the moment"}, 404
+            return {"status": "Failed!","message": "You don\'t have any cart at the moment"}, 404
         seller = get_user_by_email(get_jwt_identity())
         seller_id = seller[0]
         sale_order = []
@@ -106,7 +106,7 @@ class Carts(Resource):
             return {"status": "Failed!", "message": msg}, 400
         cart = cart_helper(get_jwt_identity())
         if not cart:
-            return {"message": "You don\'t have any cart at the moment"}, 404
+            return {"status": "Failed!","message": "You don\'t have any cart at the moment"}, 404
         seller = get_user_by_email(get_jwt_identity())
         seller_id = seller[0]
         for c in cart:
@@ -139,14 +139,14 @@ class CartDetail(Resource):
             seller = get_user_by_email(get_jwt_identity())
             seller_id = seller[0]
             if not product or product[1] != seller_id:
-                return {"message": "That product is not in the cart"}, 404
+                return {"status": "Failed!","message": "That product is not in the cart"}, 404
             cur.execute(
                 "SELECT * FROM products WHERE name='{}';".format(product[2]))
             p = cur.fetchone()
             number = int(json_data['number'])
             if p[3] < int(number):
                 msg = 'There are only {0} {1} available'.format(p[3], p[2])
-                return {"message": msg}, 400
+                return {"status": "Failed!","message": msg}, 400
             new_amnt = number * p[4]
             cur.execute(
                 "UPDATE carts SET number={0},amount={1} WHERE id ={2}".format(
@@ -184,7 +184,7 @@ class CartDetail(Resource):
         seller = get_user_by_email(get_jwt_identity())
         seller_id = seller[0]
         if not product or product[1] != seller_id:
-            return {"message": "That product is not in the cart"}, 400
+            return {"status": "Failed!","message": "That product is not in the cart"}, 400
         new_p_inv = product[3]
         cur.execute(
             "UPDATE products SET inventory= inventory + '{}' WHERE name ='{}'".format(
