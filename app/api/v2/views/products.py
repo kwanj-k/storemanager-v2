@@ -141,15 +141,16 @@ class ProductDetail(Resource):
             price = product[4]
             if 'name' in json_data:
                 name = json_data['name'].lower()
+                cur.execute("SELECT * FROM products WHERE name='{}';".format(name))
+                product_check = cur.fetchone()
+                if product_check:
+                    msg = 'That product already exists'
+                    return {"status": "Failed!", "message": msg}, 406
             if 'inventory' in json_data:
                 inventory = json_data['inventory']
             if 'price' in json_data:
                 price = json_data['price']
-            cur.execute("SELECT * FROM products WHERE name='{}';".format(name))
-            product_check = cur.fetchone()
-            if product_check:
-                msg = 'That product already exists'
-                return {"status": "Failed!", "message": msg}, 406
+            
             cur.execute("UPDATE products SET name='{}',inventory='{}',price='{}'\
             WHERE id ={}".format(name, inventory, price, id))
             conn.commit()
