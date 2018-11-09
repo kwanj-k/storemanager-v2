@@ -109,6 +109,6 @@ def tables():
         name varchar,
         created_at varchar);
         """
-    queries = [stores, users, products, sales, carts, categories, tokens]
+    queries = [stores, users, products,  carts, sales,categories, tokens]
 
     return queries
