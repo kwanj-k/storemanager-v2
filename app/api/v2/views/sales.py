@@ -18,7 +18,7 @@ cur = conn.cursor()
 v2 = Namespace('sales', description='Sale records')
 
 
-@v2.route('')
+@v2.route('sales')
 class Sales(Resource):
 
     @v2.doc(security='apikey')
@@ -28,13 +28,12 @@ class Sales(Resource):
         """
         Get all sales
         """
-        current_user = get_jwt_identity()
-        if current_user is None:
-            msg = 'Please login to access to access this resource'
-            return {"status": "Failed!", "message": msg}, 400
         store_id = get_store_id(get_jwt_identity())
         cur.execute("SELECT * FROM sales WHERE store_id={};".format(store_id))
         sales = cur.fetchall()
+        if len(sales) < 1:
+            msg = {"status":"Failed!","message":"There are no sales."},404
+            return msg
         all_sales = []
         total_sales_worth = 0
         for s in sales:
@@ -50,3 +49,36 @@ class Sales(Resource):
             all_sales.append(format_s)
         return {"status": "Success!",
                 "Total_sales_worth": total_sales_worth, "sales": all_sales}, 200
+
+
+@v2.route('user/sales')
+class UserSales(Resource):
+
+    @v2.doc(security='apikey')
+    @jwt_required
+    def get(self):
+        """
+        Get my sales
+        """
+        store_id = get_store_id(get_jwt_identity())
+        cur.execute("SELECT * FROM sales WHERE store_id={};".format(store_id))
+        sales = cur.fetchall()
+        if len(sales) < 1:
+            msg = {"status":"Failed!","message":"You have not made any sales."},404
+        all_sales = []
+        total_sales_worth = 0
+        for s in sales:
+            cur.execute("SELECT * FROM users WHERE id={};".format(s[2]))
+            seller = cur.fetchone()
+            seller_email = seller[3]
+            if seller_email == get_jwt_identity():
+                format_s = {'product_name': s[3],
+                            'number_of_products': s[4],
+                            'Amount': s[5],
+                            'seller': seller_email,
+                            'sold_on': s[6]}
+                total_sales_worth += s[5]
+                all_sales.append(format_s)
+            msg = {"status": "Success!",
+                    "Total_sales_worth": total_sales_worth, "sales": all_sales}, 200
+        return msg
