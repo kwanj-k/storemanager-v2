@@ -148,7 +148,8 @@ class CartDetail(Resource):
                 "SELECT * FROM products WHERE name='{}';".format(product[2]))
             p = cur.fetchone()
             number = int(json_data['number'])
-            if p[3] < int(number):
+            total_num = p[3] + product[3]
+            if number > int(total_num):
                 msg = 'There are only {0} {1} available'.format(p[3], p[2])
                 return {"status": "Failed!","message": msg}, 400
             new_amnt = number * p[4]
@@ -156,10 +157,7 @@ class CartDetail(Resource):
                 "UPDATE carts SET number={0},amount={1} WHERE id ={2}".format(
                     number, new_amnt, id))
             conn.commit()
-            if number > product[3]:
-                new_p_inv = p[3] - (number - product[3])
-            if number < product[3]:
-                new_p_inv = p[3] + (product[3] - number)
+            new_p_inv = total_num - number
             cur.execute(
                 "UPDATE products SET inventory= '{}' WHERE name ='{}'".format(
                     new_p_inv, product[2]))
