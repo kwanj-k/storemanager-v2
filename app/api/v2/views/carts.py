@@ -158,7 +158,8 @@ class CartDetail(Resource):
             conn.commit()
             if number > product[3]:
                 new_p_inv = p[3] - (number - product[3])
-            new_p_inv = p[3] + (product[3] - number)
+            if number < product[3]:
+                new_p_inv = p[3] + (product[3] - number)
             cur.execute(
                 "UPDATE products SET inventory= '{}' WHERE name ='{}'".format(
                     new_p_inv, product[2]))
