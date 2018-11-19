@@ -150,7 +150,7 @@ class CartDetail(Resource):
             number = int(json_data['number'])
             total_num = p[3] + product[3]
             if number > int(total_num):
-                msg = 'There are only {0} {1} available'.format(p[3], p[2])
+                msg = 'There are only {0} {1} available'.format(total_num, p[2])
                 return {"status": "Failed!","message": msg}, 400
             new_amnt = number * p[4]
             cur.execute(
