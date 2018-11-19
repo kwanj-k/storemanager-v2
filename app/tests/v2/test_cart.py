@@ -144,7 +144,7 @@ class TestCart(Settings):
         res1 = json.loads(res.data.decode())
         self.assertEqual(
             res1['message'],
-            'There are only 21 monster available')
+            'There are only 24 monster available')
         self.assertEqual(res.status_code, 400)
 
     def test_non_existing_cart_product_update(self):

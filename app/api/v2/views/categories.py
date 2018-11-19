@@ -198,16 +198,12 @@ class ProductCategoryUpdate(Resource):
         c_id : the category id
         p_id : the product id
         """
-        current_user = get_jwt_identity()
-        if current_user is None:
-            msg = 'Please login to access to access this resource'
-            return {"status": "Failed!", "message": msg}, 400
         store_id = get_store_id(get_jwt_identity())
         cur.execute("SELECT * FROM categories WHERE id='{}';".format(c_id))
         category = cur.fetchone()
         if not category or category[1] != store_id:
             msg = 'Category does not exist'
-            return {"message": msg}, 404
+            return {"status": "Failed!", "message": msg}, 404
         cur.execute("SELECT * FROM products WHERE id={};".format(p_id))
         product = cur.fetchone()
         if not product or product[1] != store_id:
