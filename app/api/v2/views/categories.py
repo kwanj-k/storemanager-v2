@@ -33,21 +33,18 @@ class Categories(Resource):
         """
         Create a category
         """
-        current_user = get_jwt_identity()
-        if current_user is None:
-            msg = 'Please login to access to access this resource'
-            return {"status": "Failed!", "message": msg}, 400
         json_data = request.get_json(force=True)
         res = category_validator(json_data)
         if res:
             return res
         store_id = get_store_id(get_jwt_identity())
-        category_name = json_data['name'].lower()
+        c_name = json_data['name'].lower()
+        category_name = "".join(c_name.split())
         cur.execute(
             "SELECT * FROM categories WHERE name='{}';".format(category_name))
         category = cur.fetchone()
         if category and category[1] == store_id:
-            return {"message": "Category already exists"}, 409
+            return {"status":"Failed!","message": "Category already exists"}, 409
         new_cat = Category(store_id, category_name)
         new_cat.add_category()
         return {"status": "Success!", "Category": new_cat.json_dump()}, 201
@@ -103,7 +100,8 @@ class CategoryDetail(Resource):
             return msg
         name = category[2]
         if 'name' in json_data:
-            name = json_data['name'].lower()
+            c_name = json_data['name'].lower()
+            name = "".join(c_name.split())
         cur.execute("SELECT * FROM categories WHERE name='{}';".format(name))
         category_check = cur.fetchone()
         if category_check:
