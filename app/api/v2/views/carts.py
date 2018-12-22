@@ -12,9 +12,8 @@ from flask_jwt_extended import get_jwt_identity, jwt_required
 # Local imports
 from app.api.v2.models.cart import Cart
 from app.api.v2.models.sale import Sale
-from app.api.v2.db_config import cur
+from app.api.v2.db_config import cur,conn
 from app.api.v2.views.expect import CartEtn
-from app.api.v2.db_config import conn
 from .helpers import get_user_by_email, get_store_id
 from app.api.common.validators import sales_validator
 
@@ -47,7 +46,7 @@ class Carts(Resource):
             return {"status": "Failed!", "message": msg}, 400
         cart = cart_helper(get_jwt_identity())
         if not cart:
-            return {"message": "You don\'t have any cart at the moment"}, 404
+            return {"status": "Failed!","message": "You don\'t have any cart at the moment"}, 404
         all_cart_items = []
         totalamount = 0
         for c in cart:
@@ -73,7 +72,7 @@ class Carts(Resource):
         cart = cart_helper(get_jwt_identity())
         store_id = get_store_id(get_jwt_identity())
         if not cart:
-            return {"message": "You don\'t have any cart at the moment"}, 404
+            return {"status": "Failed!","message": "You don\'t have any cart at the moment"}, 404
         seller = get_user_by_email(get_jwt_identity())
         seller_id = seller[0]
         sale_order = []
@@ -91,6 +90,7 @@ class Carts(Resource):
             totalamount += c[4]
             sale_order.append(format_sale)
         cur.execute("DELETE FROM carts WHERE seller_id={};".format(seller_id))
+        conn.commit()
         return {"status": "Sold!", "TotalAmount": totalamount,
                 "Items": sale_order}, 201
 
@@ -106,15 +106,19 @@ class Carts(Resource):
             return {"status": "Failed!", "message": msg}, 400
         cart = cart_helper(get_jwt_identity())
         if not cart:
-            return {"message": "You don\'t have any cart at the moment"}, 404
+            return {"status": "Failed!","message": "You don\'t have any cart at the moment"}, 404
         seller = get_user_by_email(get_jwt_identity())
         seller_id = seller[0]
         for c in cart:
             inventory = c[3]
             name = c[2]
             cur.execute(
-                "UPDATE products SET inventory= inventory + '{}' WHERE name ='{}'".format(inventory, name))
+                "UPDATE products SET inventory= inventory + {} WHERE name ='{}'".format(inventory, name))
+            conn.commit()
+
         cur.execute("DELETE FROM carts WHERE seller_id={};".format(seller_id))
+        conn.commit()
+
         return {"status": "Cart Deleted!"}, 200
 
 
@@ -139,22 +143,21 @@ class CartDetail(Resource):
             seller = get_user_by_email(get_jwt_identity())
             seller_id = seller[0]
             if not product or product[1] != seller_id:
-                return {"message": "That product is not in the cart"}, 404
+                return {"status": "Failed!","message": "That product is not in the cart"}, 404
             cur.execute(
                 "SELECT * FROM products WHERE name='{}';".format(product[2]))
             p = cur.fetchone()
             number = int(json_data['number'])
-            if p[3] < int(number):
-                msg = 'There are only {0} {1} available'.format(p[3], p[2])
-                return {"message": msg}, 400
+            total_num = p[3] + product[3]
+            if number > int(total_num):
+                msg = 'There are only {0} {1} available'.format(total_num, p[2])
+                return {"status": "Failed!","message": msg}, 400
             new_amnt = number * p[4]
             cur.execute(
                 "UPDATE carts SET number={0},amount={1} WHERE id ={2}".format(
                     number, new_amnt, id))
             conn.commit()
-            if number > product[3]:
-                new_p_inv = p[3] - (number - product[3])
-            new_p_inv = p[3] + (product[3] - number)
+            new_p_inv = total_num - number
             cur.execute(
                 "UPDATE products SET inventory= '{}' WHERE name ='{}'".format(
                     new_p_inv, product[2]))
@@ -184,13 +187,14 @@ class CartDetail(Resource):
         seller = get_user_by_email(get_jwt_identity())
         seller_id = seller[0]
         if not product or product[1] != seller_id:
-            return {"message": "That product is not in the cart"}, 400
+            return {"status": "Failed!","message": "That product is not in the cart"}, 400
         new_p_inv = product[3]
         cur.execute(
-            "UPDATE products SET inventory= inventory + '{}' WHERE name ='{}'".format(
+            "UPDATE products SET inventory= inventory + {} WHERE name ='{}'".format(
                 new_p_inv, product[2]))
         conn.commit()
         cur.execute("DELETE FROM carts WHERE id='{}';".format(id))
+        conn.commit()
         format_c = {
             "product": product[2],
             "number": product[3],

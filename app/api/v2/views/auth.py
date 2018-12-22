@@ -115,8 +115,7 @@ class Logout(Resource):
             msg = 'Please login to access to access this resource'
             return {"status": "Failed!", "message": msg}, 400
         jti = get_raw_jwt()['jti']
-        b_token = """INSERT INTO
-                tokens (token) VALUES ('{}')""" .format(jti)
+        b_token = """INSERT INTO tokens (token) VALUES ('{}')""" .format(jti)
         cur.execute(b_token)
         conn.commit()
         return {"status": "Success!", "message": "Successfully logged out"}, 200
@@ -146,7 +145,7 @@ class AddAdmin(Resource):
                         "message": "User already exists and is Admin already"}, 409
             if newad and newad[2] == 2:
                 cur.execute(
-                    "DELETE FROM users WHERE email={};".format(
+                    "DELETE FROM users WHERE email='{}';".format(
                         json_data['email']))
                 conn.commit()
             user = get_user_by_email(email)
